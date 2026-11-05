@@ -10,12 +10,19 @@ const ADS = {
   'variant-b-fireplace/dist': ['top.html', 'left.html', 'right.html'],
 };
 
-// Follows relative src/href in HTML and url() in CSS.
+// Follows relative src/href in HTML, url() in CSS and bundled file names in JS.
 function filesOf(root, entry, seen = new Set()) {
   if (seen.has(entry)) return seen;
   seen.add(entry);
-  if (!/\.(html|css)$/.test(entry)) return seen;
+  if (!/\.(html|css|js)$/.test(entry)) return seen;
   const source = readFileSync(join(root, entry), 'utf8');
+  if (entry.endsWith('.js')) {
+    for (const [name] of source.matchAll(/[\w.-]+\.(?:png|jpe?g|mp3|js|css)\b/g)) {
+      const path = join(dirname(entry), name);
+      if (existsSync(join(root, path))) filesOf(root, path, seen);
+    }
+    return seen;
+  }
   const refs = source.matchAll(/(?:src|href)="([^"]+)"|url\(["']?([^"')]+)["']?\)/g);
   for (const [, html, css] of refs) {
     const ref = html ?? css;
