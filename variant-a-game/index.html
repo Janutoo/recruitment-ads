@@ -2,28 +2,15 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <title>Gut Run</title>
   <style>
-    /* Stage 1 placeholder: proves the asset pipeline only. No game, no scaling yet. */
-    html, body { margin: 0; background: #0c1f4b; }
-    .stage { position: relative; width: 360px; height: 640px; overflow: hidden; }
-    .stage img { position: absolute; left: 0; top: 0; width: 360px; height: 640px; }
-    /* Gut and texture reach above the top fold: the playfield is clipped at y 168.5 (border.png starts there). */
-    .stage .field { clip-path: inset(168.5px 0 0 0); }
-    .stage .gut { left: -2px; width: 2528px; } /* Offset measured on design/01-start.png. */
-    .stage .gesture { left: 147.5px; top: 452px; width: 86.5px; height: 96px; }
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #0b1e49; overscroll-behavior: none; }
+    canvas { position: fixed; left: 0; top: 0; display: block; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
   </style>
 </head>
 <body>
-  <div class="stage">
-    <img src="./assets/bg.jpg" alt="">
-    <img class="field" src="./assets/01_game/bg_texture.png" alt="">
-    <img class="field gut" src="./assets/01_game/gameplay.png" alt="">
-    <img src="./assets/border.png" alt="">
-    <img src="./assets/logo.png" alt="Logo">
-    <img src="./assets/01_game/tut.png" alt="Bringe Poo durch den Darm ans Ziel.">
-    <img class="gesture" src="./assets/gesture.png" alt="tab to run">
-  </div>
+  <canvas aria-label="Gut Run: tap to jump and guide the poo through the gut"></canvas>
+  <script type="module" src="./src/main.js"></script>
 </body>
 </html>

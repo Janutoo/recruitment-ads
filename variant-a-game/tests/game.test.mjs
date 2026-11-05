@@ -4,6 +4,7 @@ import sharp from 'sharp';
 import { Game, HOVER_END_Y, HOVER_SCROLL } from '../src/game.js';
 import { END_SCROLL, OBSTACLES, PLAYER } from '../src/level.js';
 import { buildMask, masksOverlap } from '../src/masks.js';
+import { fitStage } from '../src/render.js';
 
 const ASSETS = new URL('../assets/', import.meta.url).pathname;
 
@@ -45,6 +46,15 @@ function playWithBot(game, frame = 1 / 60) {
     game.advance(frame);
   }
 }
+
+test('the stage fits every target viewport without distortion or cropping', () => {
+  for (const [width, height] of [[320, 568], [360, 640], [390, 664], [412, 732], [430, 932]]) {
+    const { scale, offsetX, offsetY } = fitStage(width, height);
+    assert.ok(offsetX >= 0 && offsetY >= 0, `${width}x${height}`);
+    assert.ok(Math.min(offsetX, offsetY) < 1e-9, `${width}x${height} touches two edges`);
+    assert.ok(360 * scale <= width + 1e-9 && 640 * scale <= height + 1e-9, `${width}x${height}`);
+  }
+});
 
 test('level has every obstacle exactly once', () => {
   const expected = ['bac1', 'bac2', 'bac3', 'bac4', 'bac5', 'bac6', 'txt1', 'txt2', 'txt3', 'txt4', 'txt5', 'txt6', 'txt7', 'txt8', 'txt9'];
