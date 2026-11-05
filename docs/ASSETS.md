@@ -56,7 +56,7 @@ Alpha "none" means the file has no alpha channel, so its black areas are opaque.
 
 ## Variant B
 
-14 files, 4372.8 KB in total.
+14 files, 4554.4 KB in total.
 
 | File | Format | Pixels / audio | CSS px | KB | Alpha | Purpose |
 |---|---|---|---|---|---|---|
@@ -69,8 +69,8 @@ Alpha "none" means the file has no alpha channel, so its black areas are opaque.
 | variant-b-fireplace/assets/right/bg.jpg | jpeg | 640x1950 | 320x975 | 444.7 | none | Source for slices (below the seam line). Product baked in. Not shipped |
 | variant-b-fireplace/assets/right/hl.png | png | 640x1950 | 320x975 | 4.7 | none | Side copy. 1-bit white on opaque black: mix-blend-mode screen |
 | variant-b-fireplace/assets/right/logo.png | png | 640x1950 | 320x975 | 12.7 | yes | Logo layer, full-size canvas |
-| variant-b-fireplace/assets/slices/left.jpg | jpeg | 640x1950 | 320x975 | 259.8 | none | GENERATED: production background, left |
-| variant-b-fireplace/assets/slices/right.jpg | jpeg | 640x1950 | 320x975 | 277.9 | none | GENERATED: production background, right |
-| variant-b-fireplace/assets/slices/top.jpg | jpeg | 2064x500 | 1032x250 | 281.8 | none | GENERATED: production background, top |
+| variant-b-fireplace/assets/slices/left.jpg | jpeg | 640x1950 | 320x975 | 321.2 | none | GENERATED: production background, left |
+| variant-b-fireplace/assets/slices/right.jpg | jpeg | 640x1950 | 320x975 | 342.0 | none | GENERATED: production background, right |
+| variant-b-fireplace/assets/slices/top.jpg | jpeg | 2064x500 | 1032x250 | 338.0 | none | GENERATED: production background, top |
 | variant-b-fireplace/assets/top/bg.jpg | jpeg | 2064x500 | 1032x250 | 543.0 | none | Pre-cut top. Does not line up with the sides. Not shipped |
 | variant-b-fireplace/assets/top/hl.png | png | 2064x500 | 1032x250 | 190.1 | yes | Top headline with glow. Wording differs from layout.png |

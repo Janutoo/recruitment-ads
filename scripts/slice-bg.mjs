@@ -7,7 +7,7 @@ import { mkdir } from 'node:fs/promises';
 import sharp from 'sharp';
 
 const dir = 'variant-b-fireplace/assets';
-const quality = Number(process.argv[2] ?? 75);
+const quality = Number(process.argv[2] ?? 85);
 const jpeg = { quality, mozjpeg: true };
 
 // Fade zone in asset px: starts under the logo (ends y 381), ends above the right part's leaf (starts y 470).

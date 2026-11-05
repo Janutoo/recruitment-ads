@@ -1,9 +1,11 @@
-// Measures what each creative really loads from dist. Run `npm run build` first.
+// Measures what each ad really loads from dist. Run `npm run build` first.
+// The 3 MB limit applies per complete ad. The fireplace is one ad delivered as three
+// packages, so files they share count once per package.
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
 const LIMIT = 3_000_000;
-const CREATIVES = {
+const ADS = {
   'variant-a-game/dist': ['index.html'],
   'variant-b-fireplace/dist': ['top.html', 'left.html', 'right.html'],
 };
@@ -28,22 +30,17 @@ function filesOf(root, entry, seen = new Set()) {
 const size = (root, files) => [...files].reduce((sum, file) => sum + statSync(join(root, file)).size, 0);
 const mb = (bytes) => `${(bytes / 1_000_000).toFixed(3)} MB`;
 
-let everything = 0;
 let failed = false;
-for (const [root, entries] of Object.entries(CREATIVES)) {
-  let packages = 0;
+for (const [root, entries] of Object.entries(ADS)) {
+  let total = 0;
   for (const entry of entries) {
     const files = filesOf(root, entry);
     const bytes = size(root, files);
-    packages += bytes;
-    failed ||= bytes > LIMIT;
+    total += bytes;
     console.log(`${root}/${entry}: ${mb(bytes)} (${files.size} files)`);
   }
-  everything += packages;
-  failed ||= packages > LIMIT;
-  console.log(`${root} delivered as separate packages: ${mb(packages)}`);
+  const over = total > LIMIT;
+  failed ||= over;
+  console.log(`${root} whole ad: ${mb(total)} ${over ? 'OVER' : 'ok'} (limit ${mb(LIMIT)})`);
 }
-failed ||= everything > LIMIT;
-console.log(`All creatives together: ${mb(everything)}`);
-console.log(failed ? `OVER the ${mb(LIMIT)} limit` : `This build is within ${mb(LIMIT)} under every reading of the limit`);
 process.exit(failed ? 1 : 0);
