@@ -107,7 +107,7 @@ Each entry gives the problem, the decision, the alternative and the trade-offs. 
 
 ## 8. Variant A scaling: fit 360x640, extend the background
 
-**Status: Tested** at the four sizes below in desktop Chromium with a pixel ratio of 1. Real toolbars and high pixel ratios are not tested.
+**Status: Tested** at the four sizes below, plus 768x1024 and 1920x1080, in desktop Chromium and with emulated phones. Real phones and real toolbars are not tested.
 
 - **Problem:** the phones in scope are not all 9:16.
 
@@ -118,9 +118,10 @@ Each entry gives the problem, the decision, the alternative and the trade-offs. 
 | 390x664 (toolbar visible) | 1.0375 | 16.5 px wide |
 | 430x932 | 1.194 | 168 px tall |
 
-- **Decision:** `scale = min(width / 360, height / 640)` from `visualViewport`, re-measured on resize. Centre the stage and extend its surroundings: white above the logo bar, the fold colour below, and at the sides the gut continues and the folds are mirrored. The canvas backing store follows `devicePixelRatio`, capped at 2 because assets are 2x.
-- **Alternative:** `cover` scaling (cuts off the logo or CTA) or a taller playfield (changes difficulty between phones, so collision fairness differs).
-- **Trade-offs:** tall phones keep plain bands of about 84 px above and below (at 430x932), in exchange for identical gameplay everywhere. The bands are clean but plain, and could be improved in the polish stage.
+- **Decision:** `scale = min(width / 360, height / 640)` from `visualViewport`, with its size multiplied by its scale so that zoom does not change the layout. Centre the stage and extend its surroundings: white above the logo bar, the fold colour below. At the sides, gut, texture and folds continue as mirrored copies for at most 24 stage px, which covers phones with toolbars. Wider screens show the ad as a portrait column on a dark background. The canvas never has more than 2 pixels per stage px, because assets are 2x.
+- **Alternative:** `cover` scaling (cuts off the logo or CTA), a taller playfield (changes difficulty between phones, so collision fairness differs), or extending the world across wide screens (players would see obstacles far ahead).
+- **Trade-offs:** tall phones keep plain bands of about 84 px above and below (at 430x932), and desktop screens have empty sides, in exchange for identical gameplay everywhere. The bands are clean but plain, and could be improved in the polish stage.
+- **Evidence:** emulated phones at a pixel ratio of 3 use a 752x1280 canvas at 390x664 and hold 60 fps in desktop Chromium, which says little about a real phone's GPU.
 
 ## 9. Variant A audio
 

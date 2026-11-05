@@ -15,12 +15,13 @@ Source: the task README. `[x]` means verified by running it, see the note on eac
 ## Variant A: required
 
 **Format**
-- [x] Fills the viewport at 320x568, 360x640, 390x664 and 430x932 without distortion or cropping (desktop Chromium, pixel ratio 1). Real phones are still open.
+- [x] Fills the viewport at 320x568, 360x640, 390x664 and 430x932 without distortion or cropping (desktop Chromium and emulated phones at pixel ratio 2 and 3). Real phones are still open.
+- [x] Wider screens (768x1024, 1920x1080) show a clean portrait column (Chromium).
 - [ ] Stays correct when mobile browser toolbars show or hide. Viewport resize during a run works in desktop Chromium, real toolbars are untested.
 
 **Start screen**
 - [x] Logo bar, headline, player, obstacles and tutorial match `01-start.png` (Chromium, 360x640, average difference 1.2 of 255).
-- [x] The first tap starts the game (real mouse and keyboard, 8 of 8 from a fresh load). Real touch is untested.
+- [x] The first tap starts the game (mouse and keyboard, 8 of 8 from a fresh load, plus emulated touch on 3 phone sizes). A real touchscreen is untested.
 
 **Gameplay**
 - [x] Player x is fixed. A tap jumps, gravity pulls down (tests and Chromium).
