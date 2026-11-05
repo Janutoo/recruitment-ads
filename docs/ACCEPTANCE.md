@@ -16,7 +16,9 @@ Source: the task README. `[x]` means verified by running it, in desktop Chromium
 
 **Format**
 - [x] Fills the viewport at 320x568, 360x640, 390x664, 390x844 and 430x932 without distortion or cropping (emulated phones at pixel ratio 2 and 3).
-- [x] Tablets, landscape and desktop also fill the screen: 768x1024, 768x954, 744x1133, 1024x768, 1133x744, 844x390, 1920x1080 and 2560x1080 (emulated). Rotating during a run keeps it going. Not yet confirmed on a real iPad.
+- [x] Tablets, landscape and desktop also fill the screen: 768x1024, 768x954, 744x1133, 1024x768, 1133x744, 844x390, 1920x1080 and 2560x1080 (emulated). Rotating during a run keeps it going.
+- [x] iPad mini simulator with real Safari: opening in either orientation and rotating both ways fills the screen.
+- [ ] Real iPad mini: rotating without a reload left a strip of blue background on an earlier build. Fix not confirmed on the device.
 
 **Start screen**
 - [x] Logo bar, headline, player, obstacles and tutorial match `01-start.png` (average difference 1.2 of 255).

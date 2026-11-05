@@ -45,7 +45,8 @@ For the fireplace, run `npm run dev:b` and open `/preview.html`.
 
 ## Known issues and shortcuts
 
-- **Tested in Chromium only**, on desktop and with emulated phones. See the end of the [acceptance checklist](docs/ACCEPTANCE.md).
+- **Tested mostly in Chromium**, on desktop and with emulated phones. The game was also checked in WebKit, on an iPad mini simulator and briefly on real devices. See the end of the [acceptance checklist](docs/ACCEPTANCE.md).
+- **Real iPad mini:** rotating without a reload left a strip of blue background on an earlier build. The simulator doesn't reproduce it, so the fix is unconfirmed on the device.
 - **Nobody has listened to the audio.** It was checked by inspecting the audio state, so the balance and the loop point are unverified.
 - **Fireplace:** the top headline wording differs from `layout.png`, because I used the provided asset. The top banner's moss also differs, because it has to line up with the sides.
 - **Fireplace:** the product is baked into the backgrounds, so it arrives from nearby rather than from outside the part.
@@ -59,4 +60,4 @@ For the fireplace, run `npm run dev:b` and open `/preview.html`.
 
 I used Claude Code to measure the assets, write the code and tests, and drive Playwright for visual checks.
 
-One example where the output was wrong: the first scaling code was only tested at phone sizes. When I opened the game on a wide screen, I noticed that the folds stopped short, the gut was missing on one side and obstacles were visible far ahead. The canvas had also grown to 6982x3928 px under browser zoom, which dropped the frame rate. We fixed it by extending the world to every screen edge with mirrored copies and capping the canvas resolution. Playing on a real iPad mini then showed that a first fix, a portrait column with empty sides, wasn't good enough, so the canvas now fills the screen through CSS and reads its real size from there.
+One example where the output was wrong: the first scaling code was only tested at phone sizes. When I opened the game on a wide screen, I noticed that the folds stopped short, the gut was missing on one side and obstacles were visible far ahead. The canvas had also grown to 6982x3928 px under browser zoom, which dropped the frame rate. We fixed it by extending the world to every screen edge with mirrored copies and capping the canvas resolution. Playing on a real iPad mini then showed that a first fix, a portrait column with empty sides, wasn't good enough, so the game now extends to every screen edge in both orientations.

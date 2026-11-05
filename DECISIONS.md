@@ -116,7 +116,7 @@ Each entry gives the problem, the decision, the alternative and the trade-offs. 
 
 ## 8. Variant A scaling: fit 360x640, extend the background
 
-**Status: Tested** at the four sizes below, plus tablet, landscape and desktop sizes, in Chromium with emulated devices. A real phone was used for a first check of the scaling. The final version has not been confirmed on a real iPad.
+**Status: Tested** at the four sizes below, plus tablet, landscape and desktop sizes, in Chromium with emulated devices. An iPad mini simulator (iOS 26.5, real Safari) fills the screen when opened in either orientation and after rotating both ways. A real phone fills the screen too. **A real iPad mini showed a strip of blue background after rotating without a reload. The simulator doesn't reproduce it, not even on the previous build, so the fix is unconfirmed on that device.**
 
 - **Problem:** the phones in scope are not all 9:16.
 
@@ -127,7 +127,7 @@ Each entry gives the problem, the decision, the alternative and the trade-offs. 
 | 390x664 (toolbar visible) | 1.0375 | 16.5 px wide |
 | 430x932 | 1.194 | 168 px tall |
 
-- **Decision:** CSS makes the canvas fill the screen, and a `ResizeObserver` reads its real size, which also catches rotation and toolbars. `scale = min(width / 360, height / 640)`, and the stage is centred. Its surroundings extend to every edge: white above the logo bar, the fold colour below, and alternating mirrored copies of gut, texture and folds at the sides. The canvas never has more than 2 pixels per stage px, because assets are 2x.
+- **Decision:** the canvas and the DOM layer get explicit sizes from `innerWidth` and `innerHeight`, re-measured on resize and rotation and again shortly after, because iOS can report the final size late. All layers sit in a container with `overflow: hidden`, because iOS Safari zooms a page out when something sticks out of the screen. `scale = min(width / 360, height / 640)`, and the stage is centred. Its surroundings extend to every edge: white above the logo bar, the fold colour below, and alternating mirrored copies of gut, texture and folds at the sides. The canvas never has more than 2 pixels per stage px, because assets are 2x.
 - **Alternative:** `cover` scaling (cuts off the logo or CTA), a taller playfield (changes difficulty between phones, so collision fairness differs), or a portrait column with empty sides on wide screens (tried first, and it looked poor on a tablet).
 - **Trade-offs:** tall phones keep plain bands of about 84 px above and below (at 430x932). Wide screens show obstacles much earlier, about 2 s in landscape on an iPad, so the game is easier there. The rules and collisions are the same everywhere.
 - **Found by playing:** on a real iPad mini, the first versions left a narrow column between dark bars.
