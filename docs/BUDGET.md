@@ -14,7 +14,7 @@ All values are bytes on disk with no gzip, using 1 MB = 1,000,000 B.
 | `left.html` | 0.287 MB | slice, overlays, CSS, HTML |
 | `right.html` | 0.305 MB | slice, overlays, CSS, HTML |
 | **Variant B, three separate packages** | **1.076 MB** | no JS yet |
-| `index.html` (Variant A) | 0.401 MB | **placeholder only**: no audio, sprites or endcards |
+| `index.html` (Variant A) | 0.402 MB | **placeholder only**: no audio, sprites or endcards |
 
 The passing `npm run budget` result does not cover the finished game yet.
 
@@ -53,7 +53,7 @@ GSAP counts three times in Variant B because each part is delivered as its own a
 | Variant B, three packages | 1.35 MB |
 | Total | 2.95 MB |
 
-The cut applause is the only compression needed: it saves 0.565 MB, more than the 0.445 MB overshoot. If the recruiter confirms a per-ad limit, it can go back to full length, and the side and top backgrounds can move from q75 to q85 (+0.17 MB).
+The cut applause is the only compression needed: it saves 0.565 MB, more than the 0.445 MB overshoot. If the recruiter confirms a per-ad limit, it can go back to full length, and the side and top backgrounds can move from q75 to q85 (+0.19 MB).
 
 ## Not shipped
 

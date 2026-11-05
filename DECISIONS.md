@@ -21,12 +21,14 @@ Each entry gives the problem, the decision, the alternative and the trade-offs. 
 |---|---|---|---|
 | Difference from `layout.png`, left / right (lower is better) | 15 / 17 | 23 / 52 | 20 / 21 |
 | Top/right seam vs. the same distance inside an image | 64 vs. 39, visibly broken | 41 vs. 48 | 42 vs. 48 |
+| Left/top seam vs. the same distance inside an image | 70 vs. 48 | 62 vs. 51 | 61 vs. 49 |
 | Right pack width in asset px (`layout.png` scale: 340) | 340 | 383 (+12.6%) | 340 |
 | Blue remnant on the left pack | no | yes | no |
 
 - **Decision:** the sides use `bg-big.jpg` above y 385 and the pre-cut file below y 480, with a smooth fade in between. The top is cut from `bg-big.jpg`. Seams only exist in the top 250 CSS px of the sides, because below that they sit next to the website.
 - **Alternative:** `bg-big.jpg` alone (wrong product size and an artefact) or the pre-cut files alone (broken seams).
 - **Trade-offs:** the JPEGs are recompressed at q75. Between y 480 and y 500, the last 10 CSS px of the seam, the side no longer comes from `bg-big.jpg`. The top banner's moss differs from `layout.png`, so the rock sits further right and continues into the right part.
+- **Residual:** the left/top seam stays somewhat above the baseline, as it does in `bg-big.jpg` itself. No break is visible by eye, but the metric does not prove it is perfect.
 - **Assumption:** the 4 CSS px gap. It fits both the frame spacing in `layout.png` and the `bg-big.jpg` width (320 + 4 + 1032 + 4 + 320 = 1680), but nothing in the brief states it.
 
 ## 3. Variant B layers without alpha
@@ -68,7 +70,7 @@ Each entry gives the problem, the decision, the alternative and the trade-offs. 
 
 - **Problem:** the game needs one moving world, custom hitboxes, a debug overlay and a clean restart, with little weight to spare.
 - **Decision:** one `<canvas>` for gameplay. Endcards stay in the DOM, which makes the CTA and replay real buttons and suits GSAP.
-- **Alternative:** Phaser (measured at 1.376 MB, about 88% of the Variant A budget) or DOM-only with `transform` (simple, but it adds a compositing layer per obstacle and makes the debug overlay harder).
+- **Alternative:** Phaser (measured at 1.376 MB, about 86% of the Variant A budget) or DOM-only with `transform` (simple, but it adds a compositing layer per obstacle and makes the debug overlay harder).
 - **Trade-offs:** I write the loop, input and pause myself. It is a small amount of code, but those are also the likely bug sources, so they get explicit replay and pause tests.
 - **Time step:** based on `requestAnimationFrame` deltas, with a clamp so that returning from a hidden tab cannot cause a jump.
 - **Hitboxes:** images fill only 38% to 72% of their rectangles. The plan is an ellipse for the player and a small hand-tuned shape per obstacle, checked with `?debug=1`.
