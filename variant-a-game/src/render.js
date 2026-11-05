@@ -5,7 +5,7 @@ const OUTSIDE_COLOUR = '#05080f'; // Beyond the ad, on screens much wider than a
 const FOLD_COLOUR = '#d89c95'; // Bottom row of border.png.
 const LOGO_BAR_HEIGHT = 58;
 const ASSET_SCALE = 2; // Assets are 2x, so more canvas pixels per stage px add no detail.
-const MAX_SIDE_EXTENSION = 24; // Stage px. Covers phones with toolbars, and keeps look-ahead equal.
+const MAX_SIDE_EXTENSION = 80; // Stage px. Fills portrait phones and tablets, and limits look-ahead.
 
 // The stage keeps its proportions. Free space is filled by extending the surroundings.
 export function fitStage(viewportWidth, viewportHeight) {

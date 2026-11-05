@@ -64,11 +64,9 @@ let pausedByVisibility = false;
 let endcardOpen = false;
 
 function fitToViewport() {
-  const viewport = window.visualViewport;
-  // width x scale cancels zoom, so pinch zoom or a zoomed preview does not change the layout.
-  const width = viewport ? viewport.width * viewport.scale : innerWidth;
-  const height = viewport ? viewport.height * viewport.scale : innerHeight;
-  const { scale, offsetX, offsetY, view } = renderer.resize(Math.round(width), Math.round(height));
+  // Pinch zoom is not a layout change. Any other zoom must still fill the whole visible area.
+  if (window.visualViewport?.scale > 1.01) return;
+  const { scale, offsetX, offsetY, view } = renderer.resize(innerWidth, innerHeight);
   stage.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
   stage.style.setProperty('--side', `${-view.left}px`);
   stage.style.setProperty('--below', `${view.bottom - STAGE_HEIGHT}px`);
