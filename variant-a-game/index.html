@@ -6,8 +6,8 @@
   <title>Gut Run</title>
   <link rel="icon" href="data:,">
   <style>
-    html, body { margin: 0; height: 100%; overflow: hidden; background: #05080f; overscroll-behavior: none; }
-    canvas { position: fixed; left: 0; top: 0; display: block; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #0b1e49; overscroll-behavior: none; }
+    canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
 
     /* DOM on top of the canvas, same 360x640 coordinates as the design. */
     .stage { position: fixed; left: 0; top: 0; width: 360px; height: 640px; transform-origin: 0 0; pointer-events: none; visibility: hidden; }
@@ -16,7 +16,7 @@
     button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
     button img { display: block; width: 100%; height: 100%; }
 
-    .mute { position: absolute; z-index: 2; left: 320px; top: 11px; width: 36px; height: 36px; color: #0b1e49; }
+    .mute { position: absolute; z-index: 2; left: calc(var(--side, 0px) + 320px); top: 11px; width: 36px; height: 36px; color: #0b1e49; }
     .mute svg { display: block; width: 20px; height: 20px; margin: auto; }
     .mute .off { display: none; }
     .mute[aria-pressed="true"] .on { display: none; }

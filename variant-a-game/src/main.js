@@ -63,17 +63,18 @@ const debug = new URLSearchParams(location.search).get('debug') === '1';
 let pausedByVisibility = false;
 let endcardOpen = false;
 
-function fitToViewport() {
-  // Pinch zoom is not a layout change. Any other zoom must still fill the whole visible area.
-  if (window.visualViewport?.scale > 1.01) return;
-  const { scale, offsetX, offsetY, view } = renderer.resize(innerWidth, innerHeight);
+// CSS makes the canvas fill the screen, so its own size is the truth on every browser.
+// The observer also catches rotation and toolbars, and pinch zoom does not trigger it.
+function fitToCanvas() {
+  const { clientWidth: width, clientHeight: height } = canvas;
+  if (!width || !height) return;
+  const { scale, offsetX, offsetY, view } = renderer.resize(width, height);
   stage.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
   stage.style.setProperty('--side', `${-view.left}px`);
   stage.style.setProperty('--below', `${view.bottom - STAGE_HEIGHT}px`);
 }
-fitToViewport();
-window.addEventListener('resize', fitToViewport);
-window.visualViewport?.addEventListener('resize', fitToViewport);
+fitToCanvas();
+new ResizeObserver(fitToCanvas).observe(canvas);
 
 // Audio may only start from an interaction, and on touch that means the end of the tap.
 for (const type of ['pointerdown', 'pointerup', 'touchend', 'keydown']) {

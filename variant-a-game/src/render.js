@@ -1,11 +1,9 @@
 import { FIELD_TOP, GESTURE, GUT_WIDTH, GUT_X, OBSTACLES, PLAYER, STAGE_HEIGHT, STAGE_WIDTH } from './level.js';
 
 const NAVY = '#0b1e49'; // bg.jpg
-const OUTSIDE_COLOUR = '#05080f'; // Beyond the ad, on screens much wider than a phone.
 const FOLD_COLOUR = '#d89c95'; // Bottom row of border.png.
 const LOGO_BAR_HEIGHT = 58;
 const ASSET_SCALE = 2; // Assets are 2x, so more canvas pixels per stage px add no detail.
-const MAX_SIDE_EXTENSION = 80; // Stage px. Fills portrait phones and tablets, and limits look-ahead.
 
 // The stage keeps its proportions. Free space is filled by extending the surroundings.
 export function fitStage(viewportWidth, viewportHeight) {
@@ -45,15 +43,12 @@ export class Renderer {
     const pixelRatio = Math.min(window.devicePixelRatio || 1, ASSET_SCALE / scale);
     this.canvas.width = Math.round(viewportWidth * pixelRatio);
     this.canvas.height = Math.round(viewportHeight * pixelRatio);
-    this.canvas.style.width = `${viewportWidth}px`;
-    this.canvas.style.height = `${viewportHeight}px`;
 
     this.transform = [scale * pixelRatio, 0, 0, scale * pixelRatio, offsetX * pixelRatio, offsetY * pixelRatio];
-    // Area of the ad in stage coordinates.
-    const sideExtension = Math.min(offsetX / scale, MAX_SIDE_EXTENSION);
+    // The whole screen in stage coordinates.
     this.view = {
-      left: -sideExtension,
-      right: STAGE_WIDTH + sideExtension,
+      left: -offsetX / scale,
+      right: STAGE_WIDTH + offsetX / scale,
       top: -offsetY / scale,
       bottom: STAGE_HEIGHT + offsetY / scale,
     };
@@ -66,16 +61,7 @@ export class Renderer {
     const { ctx, images, view } = this;
     const width = view.right - view.left;
 
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.fillStyle = OUTSIDE_COLOUR;
-    ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-
     ctx.setTransform(...this.transform);
-    ctx.save();
-    ctx.beginPath();
-    ctx.rect(view.left, view.top, width, view.bottom - view.top);
-    ctx.clip();
-
     ctx.fillStyle = NAVY;
     ctx.fillRect(view.left, view.top, width, view.bottom - view.top);
     ctx.drawImage(images.bg, 0, 0, STAGE_WIDTH, STAGE_HEIGHT);
@@ -114,7 +100,6 @@ export class Renderer {
       ctx.fillRect(view.left, FIELD_TOP, width, view.bottom - FIELD_TOP);
       this.drawGesture(1, 1);
     }
-    ctx.restore();
   }
 
   drawGesture(alpha, scale) {
@@ -126,18 +111,23 @@ export class Renderer {
     ctx.globalAlpha = 1;
   }
 
-  // A mirrored copy continues the image past an end that is inside the ad, without a jump.
-  // It overlaps the original by 1 px, so a fractional scale leaves no line at the join.
+  // Continues the image to the screen edges with alternating mirrored copies, so nothing jumps
+  // at a join. Copies overlap by 2 px, so a fractional scale leaves no line. The original is last.
   drawExtended(image, x, width) {
     const { ctx, view } = this;
-    const mirrorLines = [];
-    if (x > view.left) mirrorLines.push(x + 1);
-    if (x + width < view.right) mirrorLines.push(x + width - 1);
-    for (const line of mirrorLines) {
+    const step = width - 2;
+    const first = Math.floor((view.left - x) / step);
+    const last = Math.ceil((view.right - x) / step);
+    for (let i = first; i <= last; i++) {
+      if (i === 0) continue;
+      const copyX = x + i * step;
+      if (copyX + width <= view.left || copyX >= view.right) continue;
       ctx.save();
-      ctx.translate(line * 2, 0);
-      ctx.scale(-1, 1);
-      ctx.drawImage(image, x, 0, width, STAGE_HEIGHT);
+      if (i % 2 !== 0) {
+        ctx.translate(copyX * 2 + width, 0);
+        ctx.scale(-1, 1);
+      }
+      ctx.drawImage(image, copyX, 0, width, STAGE_HEIGHT);
       ctx.restore();
     }
     ctx.drawImage(image, x, 0, width, STAGE_HEIGHT);
@@ -172,9 +162,12 @@ export class Renderer {
       `${game.state} ${fps} fps`,
       `scroll ${Math.round(game.scroll)} y ${Math.round(game.y)}`,
       `passed ${game.passed}/${OBSTACLES.length} hit ${game.hit ?? '-'}`,
+      `css ${this.canvas.clientWidth}x${this.canvas.clientHeight} inner ${innerWidth}x${innerHeight}`,
+      `screen ${screen.width}x${screen.height} dpr ${window.devicePixelRatio}`,
+      `vv ${Math.round(window.visualViewport?.width)}x${Math.round(window.visualViewport?.height)} @${window.visualViewport?.scale?.toFixed(2)}`,
     ];
     ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-    ctx.fillRect(4, 62, 190, 46);
+    ctx.fillRect(4, 62, 210, 88);
     ctx.fillStyle = '#0f0';
     ctx.font = '12px monospace';
     lines.forEach((line, i) => ctx.fillText(line, 8, 76 + i * 14));
