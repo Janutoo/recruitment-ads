@@ -7,10 +7,10 @@
   <link rel="icon" href="data:,">
   <style>
     html, body { margin: 0; height: 100%; overflow: hidden; background: #0b1e49; overscroll-behavior: none; }
-    canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+    canvas { position: fixed; left: 0; top: 0; width: 100vw; height: 100vh; height: 100dvh; display: block; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
 
     /* Nothing may stick out of the screen, or iOS Safari zooms the whole page out to fit it. */
-    .screen { position: fixed; inset: 0; overflow: hidden; pointer-events: none; }
+    .screen { position: fixed; left: 0; top: 0; width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; pointer-events: none; }
 
     /* DOM on top of the canvas, same 360x640 coordinates as the design. */
     .stage { position: absolute; left: 0; top: 0; width: 360px; height: 640px; transform-origin: 0 0; pointer-events: none; visibility: hidden; }

@@ -57,24 +57,46 @@ const masks = buildMasks(images);
 const game = new Game(masks);
 const canvas = document.querySelector('canvas');
 const stage = document.querySelector('.stage');
+const screenLayer = document.querySelector('.screen');
 const renderer = new Renderer(canvas, images, masks);
 const debug = new URLSearchParams(location.search).get('debug') === '1';
 
 let pausedByVisibility = false;
 let endcardOpen = false;
 
-// CSS makes the canvas fill the screen, so its own size is the truth on every browser.
-// The observer also catches rotation and toolbars, and pinch zoom does not trigger it.
-function fitToCanvas() {
-  const { clientWidth: width, clientHeight: height } = canvas;
-  if (!width || !height) return;
+let fittedWidth = 0;
+let fittedHeight = 0;
+
+function fitToScreen() {
+  if (window.visualViewport?.scale > 1.01) return; // Pinch zoom is not a layout change.
+  const width = innerWidth;
+  const height = innerHeight;
+  if (!width || !height || (width === fittedWidth && height === fittedHeight)) return;
+  fittedWidth = width;
+  fittedHeight = height;
+  window.scrollTo(0, 0);
+
+  // Explicit sizes, because after a rotation iOS Safari can leave percentage and fixed sizes stale.
+  for (const element of [canvas, screenLayer]) {
+    element.style.width = `${width}px`;
+    element.style.height = `${height}px`;
+  }
   const { scale, offsetX, offsetY, view } = renderer.resize(width, height);
   stage.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
   stage.style.setProperty('--side', `${-view.left}px`);
   stage.style.setProperty('--below', `${view.bottom - STAGE_HEIGHT}px`);
 }
-fitToCanvas();
-new ResizeObserver(fitToCanvas).observe(canvas);
+
+// iOS reports the final size some time after the rotation event, so measure again shortly after.
+function onScreenChange() {
+  fitToScreen();
+  for (const delay of [50, 150, 300, 600, 1000]) setTimeout(fitToScreen, delay);
+}
+fitToScreen();
+window.addEventListener('resize', onScreenChange);
+window.addEventListener('orientationchange', onScreenChange);
+window.addEventListener('pageshow', onScreenChange);
+window.visualViewport?.addEventListener('resize', onScreenChange);
 
 // Audio may only start from an interaction, and on touch that means the end of the tap.
 for (const type of ['pointerdown', 'pointerup', 'touchend', 'keydown']) {
