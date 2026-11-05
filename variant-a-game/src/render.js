@@ -1,9 +1,11 @@
 import { FIELD_TOP, GESTURE, GUT_WIDTH, GUT_X, OBSTACLES, PLAYER, STAGE_HEIGHT, STAGE_WIDTH } from './level.js';
 
 const NAVY = '#0b1e49'; // bg.jpg
+const OUTSIDE_COLOUR = '#05080f'; // Beyond the ad, on screens much wider than a phone.
 const FOLD_COLOUR = '#d89c95'; // Bottom row of border.png.
 const LOGO_BAR_HEIGHT = 58;
-const MAX_PIXEL_RATIO = 2; // Assets are 2x, so more pixels add no detail.
+const ASSET_SCALE = 2; // Assets are 2x, so more canvas pixels per stage px add no detail.
+const MAX_SIDE_EXTENSION = 24; // Stage px. Covers phones with toolbars, and keeps look-ahead equal.
 
 // The stage keeps its proportions. Free space is filled by extending the surroundings.
 export function fitStage(viewportWidth, viewportHeight) {
@@ -39,18 +41,19 @@ export class Renderer {
   }
 
   resize(viewportWidth, viewportHeight) {
-    const pixelRatio = Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO);
+    const { scale, offsetX, offsetY } = fitStage(viewportWidth, viewportHeight);
+    const pixelRatio = Math.min(window.devicePixelRatio || 1, ASSET_SCALE / scale);
     this.canvas.width = Math.round(viewportWidth * pixelRatio);
     this.canvas.height = Math.round(viewportHeight * pixelRatio);
     this.canvas.style.width = `${viewportWidth}px`;
     this.canvas.style.height = `${viewportHeight}px`;
 
-    const { scale, offsetX, offsetY } = fitStage(viewportWidth, viewportHeight);
     this.transform = [scale * pixelRatio, 0, 0, scale * pixelRatio, offsetX * pixelRatio, offsetY * pixelRatio];
-    // Visible area in stage coordinates.
+    // Area of the ad in stage coordinates.
+    const sideExtension = Math.min(offsetX / scale, MAX_SIDE_EXTENSION);
     this.view = {
-      left: -offsetX / scale,
-      right: STAGE_WIDTH + offsetX / scale,
+      left: -sideExtension,
+      right: STAGE_WIDTH + sideExtension,
       top: -offsetY / scale,
       bottom: STAGE_HEIGHT + offsetY / scale,
     };
@@ -60,7 +63,16 @@ export class Renderer {
   draw(game) {
     const { ctx, images, view } = this;
     const width = view.right - view.left;
+
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = OUTSIDE_COLOUR;
+    ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
     ctx.setTransform(...this.transform);
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(view.left, view.top, width, view.bottom - view.top);
+    ctx.clip();
 
     ctx.fillStyle = NAVY;
     ctx.fillRect(view.left, view.top, width, view.bottom - view.top);
@@ -70,8 +82,8 @@ export class Renderer {
     ctx.beginPath();
     ctx.rect(view.left, FIELD_TOP, width, STAGE_HEIGHT - FIELD_TOP);
     ctx.clip();
-    ctx.drawImage(images.bg_texture, 0, 0, STAGE_WIDTH, STAGE_HEIGHT);
-    ctx.drawImage(images.gameplay, GUT_X - game.scroll, 0, GUT_WIDTH, STAGE_HEIGHT);
+    this.drawExtended(images.bg_texture, 0, STAGE_WIDTH);
+    this.drawExtended(images.gameplay, GUT_X - game.scroll, GUT_WIDTH);
     for (const o of OBSTACLES) {
       const x = o.x - game.scroll;
       if (x + o.width > view.left && x < view.right) ctx.drawImage(images[o.file], x, o.y, o.width, o.height);
@@ -81,7 +93,7 @@ export class Renderer {
     // Starts under the fold's last row, so a fractional scale leaves no line between them.
     ctx.fillStyle = FOLD_COLOUR;
     ctx.fillRect(view.left, STAGE_HEIGHT - 1, width, view.bottom - STAGE_HEIGHT + 1);
-    this.drawFolds();
+    this.drawExtended(images.border, 0, STAGE_WIDTH);
 
     ctx.fillStyle = '#fff';
     ctx.fillRect(view.left, view.top, width, LOGO_BAR_HEIGHT - view.top);
@@ -90,22 +102,24 @@ export class Renderer {
 
     if (game.state === 'ready') ctx.drawImage(images.gesture, GESTURE.x, GESTURE.y, GESTURE.width, GESTURE.height);
     ctx.drawImage(images.player, PLAYER.x, game.y, PLAYER.width, PLAYER.height);
+    ctx.restore();
   }
 
-  // Mirrored copies keep the folds continuous when the viewport is wider than the stage.
-  drawFolds() {
-    const { ctx, images, view } = this;
-    if (view.left < 0) {
-      // The copies overlap the stage by 1 px, so a fractional scale leaves no line at the join.
-      for (const originX of [1, STAGE_WIDTH * 2 - 1]) {
-        ctx.save();
-        ctx.translate(originX, 0);
-        ctx.scale(-1, 1);
-        ctx.drawImage(images.border, 0, 0, STAGE_WIDTH, STAGE_HEIGHT);
-        ctx.restore();
-      }
+  // A mirrored copy continues the image past an end that is inside the ad, without a jump.
+  // It overlaps the original by 1 px, so a fractional scale leaves no line at the join.
+  drawExtended(image, x, width) {
+    const { ctx, view } = this;
+    const mirrorLines = [];
+    if (x > view.left) mirrorLines.push(x + 1);
+    if (x + width < view.right) mirrorLines.push(x + width - 1);
+    for (const line of mirrorLines) {
+      ctx.save();
+      ctx.translate(line * 2, 0);
+      ctx.scale(-1, 1);
+      ctx.drawImage(image, x, 0, width, STAGE_HEIGHT);
+      ctx.restore();
     }
-    ctx.drawImage(images.border, 0, 0, STAGE_WIDTH, STAGE_HEIGHT);
+    ctx.drawImage(image, x, 0, width, STAGE_HEIGHT);
   }
 
   // Temporary until the endcards exist.

@@ -55,8 +55,10 @@ const debug = new URLSearchParams(location.search).get('debug') === '1';
 
 function fitToViewport() {
   const viewport = window.visualViewport;
-  if (viewport && viewport.scale > 1.01) return; // Pinch zoom is not a layout change.
-  renderer.resize(Math.round(viewport?.width ?? innerWidth), Math.round(viewport?.height ?? innerHeight));
+  // width x scale cancels zoom, so pinch zoom or a zoomed preview does not change the layout.
+  const width = viewport ? viewport.width * viewport.scale : innerWidth;
+  const height = viewport ? viewport.height * viewport.scale : innerHeight;
+  renderer.resize(Math.round(width), Math.round(height));
 }
 fitToViewport();
 window.addEventListener('resize', fitToViewport);
