@@ -16,7 +16,7 @@ Use `npm run dev:a` for Variant A.
 | Command | Purpose |
 |---|---|
 | `npm run build` | Build both variants into `variant-*/dist` |
-| `npm run budget` | Measure the built creatives against the 3 MB limit (build first) |
+| `npm run budget` | Measure each built ad against the 3 MB limit (build first) |
 | `npm run assets:report` | Regenerate `docs/ASSETS.md` (needs `ffprobe`) |
 | `npm run assets:slices` | Regenerate the Variant B backgrounds |
 
@@ -29,5 +29,6 @@ Use `npm run dev:a` for Variant A.
 
 ## Known issues
 
-- Variant B top headline wording differs from `layout.png`, and the product is baked into the backgrounds. Both are waiting on an answer from the recruiter.
+- Variant B: the top headline wording differs from `layout.png`, and the product is baked into the backgrounds, so it can't slide in independently. See [DECISIONS.md](DECISIONS.md).
+- Variant A: the provided gesture asset says "tab to run" instead of "tap to run".
 - Tested in Chromium on desktop only. Safari, Firefox and real phones are still to do.

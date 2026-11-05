@@ -13,7 +13,7 @@ Each entry gives the problem, the decision, the alternative and the trade-offs. 
 
 ## 2. Variant B background: blend `bg-big.jpg` with the pre-cut files
 
-**Status: Tested** in Chromium at 1680x975. Provisional until the recruiter answers.
+**Status: Tested** in Chromium at 1680x975.
 
 - **Problem:** neither provided background meets both requirements.
 
@@ -27,7 +27,7 @@ Each entry gives the problem, the decision, the alternative and the trade-offs. 
 
 - **Decision:** the sides use `bg-big.jpg` above y 385 and the pre-cut file below y 480, with a smooth fade in between. The top is cut from `bg-big.jpg`. Seams only exist in the top 250 CSS px of the sides, because below that they sit next to the website.
 - **Alternative:** `bg-big.jpg` alone (wrong product size and an artefact) or the pre-cut files alone (broken seams).
-- **Trade-offs:** the JPEGs are recompressed at q75. Between y 480 and y 500, the last 10 CSS px of the seam, the side no longer comes from `bg-big.jpg`. The top banner's moss differs from `layout.png`, so the rock sits further right and continues into the right part.
+- **Trade-offs:** the JPEGs are recompressed at q85. Between y 480 and y 500, the last 10 CSS px of the seam, the side no longer comes from `bg-big.jpg`. The top banner's moss differs from `layout.png`, so the rock sits further right and continues into the right part.
 - **Residual:** the left/top seam stays somewhat above the baseline, as it does in `bg-big.jpg` itself. No break is visible by eye, but the metric does not prove it is perfect.
 - **Assumption:** the 4 CSS px gap. It fits both the frame spacing in `layout.png` and the `bg-big.jpg` width (320 + 4 + 1032 + 4 + 320 = 1680), but nothing in the brief states it.
 
@@ -55,7 +55,27 @@ Each entry gives the problem, the decision, the alternative and the trade-offs. 
   - Keep the background still after the intro and use light or colour changes instead.
 - **Trade-offs:** the brief lists zoom and drift only as examples, so a calm alternative is allowed, but it is less impressive. The first test will be the corner zoom because it adds no pixels.
 
-## 5. Variant B synchronisation: `postMessage` with a local fallback
+## 5. Conflicts between the brief and the assets
+
+**Status: Decided.** No extra assets were requested, so the task is solved with what was provided.
+
+- **Baked-in product.**
+  - **Problem:** the brief's example has the product sliding in, but the pack and flowers are part of the backgrounds.
+  - **Decision:** leave the pack in place and reveal it with a mask or a light effect in the intro.
+  - **Alternative:** cut the pack out of the background to move it, which leaves a hole that would have to be redrawn, and the brief forbids redrawing.
+  - **Trade-offs:** no slide-in, but the brief lists it only as an example, and nothing is redrawn.
+- **Top headline.**
+  - **Problem:** `top/hl.png` reads "STARK BEI / HUSTENREIZ & / HALSSCHMERZEN.", while `layout.png` reads "NATÜRLICH STARK / BEI HUSTENREIZ & / HALSSCHMERZEN."
+  - **Decision:** use the provided asset, and build its three lines one by one.
+  - **Alternative:** typeset the layout wording in CSS, which needs a font we don't have and replaces an asset.
+  - **Trade-offs:** the wording differs from the layout, in exchange for following "use the provided assets".
+- **"tab to run".**
+  - **Problem:** `gesture.png` says "tab to run" and the brief says "tap to run".
+  - **Decision:** use the asset unchanged and list the typo under known issues.
+  - **Alternative:** retouch the text, which the brief forbids.
+  - **Trade-offs:** a visible typo stays in the ad.
+
+## 6. Variant B synchronisation: `postMessage` with a local fallback
 
 **Status: Proposed.**
 
@@ -64,18 +84,18 @@ Each entry gives the problem, the decision, the alternative and the trade-offs. 
 - **Alternative:** `BroadcastChannel` (same origin only, so not usable across ad iframes) or a shared timestamp in the URL (needs synchronised clocks and a controlling page anyway).
 - **Trade-offs:** parts can start a little apart if a part misses the timeout, and the timeout delays a standalone start slightly.
 
-## 6. Variant A rendering: Canvas 2D without an engine
+## 7. Variant A rendering: Canvas 2D without an engine
 
 **Status: Proposed.** No game code exists yet.
 
 - **Problem:** the game needs one moving world, custom hitboxes, a debug overlay and a clean restart, with little weight to spare.
 - **Decision:** one `<canvas>` for gameplay. Endcards stay in the DOM, which makes the CTA and replay real buttons and suits GSAP.
-- **Alternative:** Phaser (measured at 1.376 MB, about 86% of the Variant A budget) or DOM-only with `transform` (simple, but it adds a compositing layer per obstacle and makes the debug overlay harder).
+- **Alternative:** Phaser (measured at 1.376 MB, which with the 2.016 MB of assets exceeds the 3 MB limit unless assets are compressed) or DOM-only with `transform` (simple, but it adds a compositing layer per obstacle and makes the debug overlay harder).
 - **Trade-offs:** I write the loop, input and pause myself. It is a small amount of code, but those are also the likely bug sources, so they get explicit replay and pause tests.
 - **Time step:** based on `requestAnimationFrame` deltas, with a clamp so that returning from a hidden tab cannot cause a jump.
 - **Hitboxes:** images fill only 38% to 72% of their rectangles. The plan is an ellipse for the player and a small hand-tuned shape per obstacle, checked with `?debug=1`.
 
-## 7. Variant A scaling: fit 360x640, extend the background
+## 8. Variant A scaling: fit 360x640, extend the background
 
 **Status: Proposed.** Only the 360x640 layout is verified. The numbers below are calculations.
 
@@ -93,12 +113,12 @@ Each entry gives the problem, the decision, the alternative and the trade-offs. 
 - **Trade-offs:** tall phones keep a colour band, in exchange for identical gameplay everywhere.
 - **Open:** how the band looks at 430x932. To be reviewed on the real render.
 
-## 8. Variant A audio
+## 9. Variant A audio
 
 **Status: Proposed.**
 
-- **Problem:** audio is 68% of the Variant A assets, autoplay is blocked until the first interaction, and replays must not stack sounds.
-- **Decision:** Web Audio API, decoding once after the first tap, with one music source at a time and one gain node for mute. Cut the applause to 6 s with a fade-out.
+- **Problem:** autoplay is blocked until the first interaction, and replays must not stack sounds.
+- **Decision:** Web Audio API, decoding once after the first tap, with one music source at a time and one gain node for mute. Audio files stay as provided, because the game is forecast at 2.119 MB of the 3 MB limit.
 - **Alternative:** `<audio>` elements, which are simpler but less precise for looping and overlapping sounds.
 - **Trade-offs:** slightly more code. MP3 encoder padding can leave a small gap in the loop, which has not been tested.
 

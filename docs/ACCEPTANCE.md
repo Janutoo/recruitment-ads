@@ -7,7 +7,7 @@ Source: the task README. `[x]` means verified by running it, see the note on eac
 - [ ] Plain HTML, CSS and ES6+. No UI framework. GSAP is the only runtime library.
 - [ ] 2x assets render at 50% and positions come from measurements (static layers verified, animated ones open).
 - [ ] Every CTA opens `window.clickTag || 'https://example.com/landing'` in a new window.
-- [ ] `npm run budget` passes on the final build, including audio and GSAP.
+- [ ] `npm run budget` passes on the final build, with each complete ad under 3 MB, including audio and GSAP.
 - [ ] New public repository, not a fork, with a readable commit history.
 - [ ] README: run commands, next steps, known issues, AI note with one corrected example.
 - [ ] DECISIONS.md complete and matching the final code.
@@ -58,13 +58,13 @@ Source: the task README. `[x]` means verified by running it, see the note on eac
 - [x] Build loads from a subfolder with relative paths: all 15 referenced files returned 200.
 
 **Layout**
-- [ ] Logo, product, panel, copy and CTA match `layout.png`. Geometry verified. Open: CTA and panel colours differ from `layout.png`, right below.
-- [ ] Three-line headline on the top banner. Open: the wording in `top/hl.png` differs from `layout.png`.
+- [x] Logo, product, panel, copy and CTA in the right place and size (Chromium, compared with `layout.png`). The CTA and panel colours differ because the provided assets do, see DECISIONS.md.
+- [x] Three-line headline on the top banner, from the provided asset. Its wording differs from `layout.png`, see DECISIONS.md.
 - [x] Seams line up where parts touch (Chromium, 1680x975, visual check and pixel metric, 4 px gap assumed).
 - [x] Layers without alpha show no black areas (Chromium).
 
 **Animation**
-- [ ] Intro of 3 to 6 seconds, coordinated across the parts.
+- [ ] Intro of 3 to 6 seconds, coordinated across the parts, revealing the baked-in product with a mask or light.
 - [ ] Calm idle state with a gentle CTA pulse, reduced or stopped after about 30 seconds.
 - [ ] Background motion keeps seams aligned (open design question, see DECISIONS.md).
 - [ ] Only `transform` and `opacity` are animated, and it stays smooth with `mix-blend-mode` in place.
