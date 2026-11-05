@@ -45,9 +45,7 @@ For the fireplace, run `npm run dev:b` and open `/preview.html`.
 
 ## Known issues and shortcuts
 
-- **Tested mostly in Chromium**, on desktop and with emulated phones. The game was also checked in WebKit, on an iPad mini simulator and briefly on real devices. See the end of the [acceptance checklist](docs/ACCEPTANCE.md).
-- **Real iPad mini:** rotating without a reload left a strip of blue background on an earlier build. The simulator doesn't reproduce it, so the fix is unconfirmed on the device.
-- **Nobody has listened to the audio.** It was checked by inspecting the audio state, so the balance and the loop point are unverified.
+- **Tested mostly in Chromium**, on desktop and with emulated phones. The game was also checked in WebKit, on an iPad mini simulator and briefly on real devices. See the end of the [acceptance checklist](docs/ACCEPTANCE.md).- **Nobody has listened to the audio.** It was checked by inspecting the audio state, so the balance and the loop point are unverified.
 - **Fireplace:** the top headline wording differs from `layout.png`, because I used the provided asset. The top banner's moss also differs, because it has to line up with the sides.
 - **Fireplace:** the product is baked into the backgrounds, so it arrives from nearby rather than from outside the part.
 - **Fireplace:** the 4 px gap between the parts is an assumption from `layout.png` and the width of `bg-big.jpg`.

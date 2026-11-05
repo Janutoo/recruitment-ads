@@ -8,7 +8,7 @@ Source: the task README. `[x]` means verified by running it, in desktop Chromium
 - [x] 2x assets render at 50%, positions come from measurements. One named exception: `bac6` on the start screen.
 - [x] Every CTA opens `window.clickTag || 'https://example.com/landing'` in a new window (including a `clickTag` set by the page).
 - [x] `npm run budget` passes on the final build, with each complete ad under 3 MB.
-- [ ] New public repository, not a fork, with a readable commit history. The repository exists but the code isn't pushed yet.
+- [x] New public repository, not a fork, with a readable commit history.
 - [x] README: run commands, next steps, known issues, AI note with one corrected example.
 - [x] DECISIONS.md complete and matching the final code.
 
@@ -18,7 +18,7 @@ Source: the task README. `[x]` means verified by running it, in desktop Chromium
 - [x] Fills the viewport at 320x568, 360x640, 390x664, 390x844 and 430x932 without distortion or cropping (emulated phones at pixel ratio 2 and 3).
 - [x] Tablets, landscape and desktop also fill the screen: 768x1024, 768x954, 744x1133, 1024x768, 1133x744, 844x390, 1920x1080 and 2560x1080 (emulated). Rotating during a run keeps it going.
 - [x] iPad mini simulator with real Safari: opening in either orientation and rotating both ways fills the screen.
-- [ ] Real iPad mini: rotating without a reload left a strip of blue background on an earlier build. Fix not confirmed on the device.
+- [x] Real iPad mini: rotating without a reload works on the final build (checked by hand). An earlier build left a strip of blue background.
 
 **Start screen**
 - [x] Logo bar, headline, player, obstacles and tutorial match `01-start.png` (average difference 1.2 of 255).
@@ -86,7 +86,7 @@ Source: the task README. `[x]` means verified by running it, in desktop Chromium
 
 ## Still open
 
-- Real phones: touch, browser toolbars, performance, and the 5056 px wide `gameplay.png`.
+- Real devices were checked by hand on a phone and an iPad mini only, with no measured performance.
 - Safari and Firefox, including `mix-blend-mode` and Web Audio on iOS.
 - Listening to the audio, and a person judging the difficulty.
 - A real tab switch, and parts on different origins.

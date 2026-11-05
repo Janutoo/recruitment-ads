@@ -116,7 +116,7 @@ Each entry gives the problem, the decision, the alternative and the trade-offs. 
 
 ## 8. Variant A scaling: fit 360x640, extend the background
 
-**Status: Tested** at the four sizes below, plus tablet, landscape and desktop sizes, in Chromium with emulated devices. An iPad mini simulator (iOS 26.5, real Safari) fills the screen when opened in either orientation and after rotating both ways. A real phone fills the screen too. **A real iPad mini showed a strip of blue background after rotating without a reload. The simulator doesn't reproduce it, not even on the previous build, so the fix is unconfirmed on that device.**
+**Status: Tested** at the four sizes below, plus tablet, landscape and desktop sizes, in Chromium with emulated devices. An iPad mini simulator (iOS 26.5, real Safari) fills the screen when opened in either orientation and after rotating both ways. A real phone fills the screen too. A real iPad mini showed a strip of blue background after rotating without a reload on an earlier build, and the current build works on that device. The simulator didn't reproduce the strip, so the exact cause is unconfirmed.
 
 - **Problem:** the phones in scope are not all 9:16.
 
