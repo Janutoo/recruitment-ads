@@ -8,7 +8,8 @@
     "build": "vite build variant-a-game && vite build variant-b-fireplace",
     "assets:slices": "node scripts/slice-bg.mjs",
     "assets:report": "node scripts/inventory.mjs",
-    "budget": "node scripts/budget.mjs"
+    "budget": "node scripts/budget.mjs",
+    "test": "node --test variant-a-game/tests/"
   },
   "devDependencies": {
     "sharp": "^0.35.5",
