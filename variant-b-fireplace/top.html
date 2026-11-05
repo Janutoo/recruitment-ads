@@ -3,12 +3,20 @@
 <head>
   <meta charset="utf-8">
   <title>Fireplace top</title>
+  <link rel="icon" href="data:,">
   <link rel="stylesheet" href="./parts.css">
 </head>
 <body>
-  <main class="part part--top">
-    <img class="bg" src="./assets/slices/top.jpg" alt="">
-    <img class="headline" src="./assets/top/hl.png" alt="Stark bei Hustenreiz und Halsschmerzen.">
+  <main class="part part--top" data-part="top">
+    <div class="bg-group">
+      <img class="bg" src="./assets/slices/top.jpg" alt="">
+      <div class="shade"></div>
+    </div>
+    <img class="line line-1" src="./assets/top/hl.png" alt="Stark bei Hustenreiz und Halsschmerzen.">
+    <img class="line line-2" src="./assets/top/hl.png" alt="">
+    <img class="line line-3" src="./assets/top/hl.png" alt="">
+    <a class="clickout" href="https://example.com/landing" target="_blank" rel="noopener" aria-label="Jetzt entdecken"></a>
   </main>
+  <script type="module" src="./src/part.js"></script>
 </body>
 </html>

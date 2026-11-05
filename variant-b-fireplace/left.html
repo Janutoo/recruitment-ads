@@ -3,15 +3,23 @@
 <head>
   <meta charset="utf-8">
   <title>Fireplace left</title>
+  <link rel="icon" href="data:,">
   <link rel="stylesheet" href="./parts.css">
 </head>
 <body>
-  <main class="part part--side">
-    <img class="bg" src="./assets/slices/left.jpg" alt="">
+  <main class="part part--side part--left" data-part="left">
+    <div class="bg-group">
+      <img class="bg" src="./assets/slices/left.jpg" alt="">
+      <div class="shade"></div>
+      <img class="pack" src="./assets/slices/left.jpg" alt="">
+      <div class="sheen-clip"><div class="sheen"></div></div>
+    </div>
     <img class="logo" src="./assets/left/logo.png" alt="Logo">
     <img class="panel" src="./assets/box.png" alt="">
     <img class="copy" src="./assets/left/hl.png" alt="Beruhigt effektiv bei trockenem Reizhusten.">
-    <img class="cta" src="./assets/cta.png" alt="Jetzt entdecken">
+    <div class="cta-wrap"><img class="cta" src="./assets/cta.png" alt=""></div>
+    <a class="clickout" href="https://example.com/landing" target="_blank" rel="noopener" aria-label="Jetzt entdecken"></a>
   </main>
+  <script type="module" src="./src/part.js"></script>
 </body>
 </html>
