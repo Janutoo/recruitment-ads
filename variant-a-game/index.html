@@ -2,15 +2,18 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover, shrink-to-fit=no">
   <title>Gut Run</title>
   <link rel="icon" href="data:,">
   <style>
     html, body { margin: 0; height: 100%; overflow: hidden; background: #0b1e49; overscroll-behavior: none; }
     canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
 
+    /* Nothing may stick out of the screen, or iOS Safari zooms the whole page out to fit it. */
+    .screen { position: fixed; inset: 0; overflow: hidden; pointer-events: none; }
+
     /* DOM on top of the canvas, same 360x640 coordinates as the design. */
-    .stage { position: fixed; left: 0; top: 0; width: 360px; height: 640px; transform-origin: 0 0; pointer-events: none; visibility: hidden; }
+    .stage { position: absolute; left: 0; top: 0; width: 360px; height: 640px; transform-origin: 0 0; pointer-events: none; visibility: hidden; }
     .stage.is-ready { visibility: visible; }
     button { padding: 0; border: 0; background: none; cursor: pointer; pointer-events: auto; -webkit-tap-highlight-color: transparent; }
     button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
@@ -50,6 +53,7 @@
 <body>
   <canvas aria-label="Gut Run: tap to jump and guide the poo through the gut"></canvas>
 
+  <div class="screen">
   <div class="stage">
     <button class="mute" type="button" aria-label="Ton aus" aria-pressed="false">
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -83,6 +87,7 @@
         <button class="cta" type="button"><img src="./assets/02_endcard/win/cta.png" alt="Jetzt mehr erfahren"></button>
       </div>
     </section>
+  </div>
   </div>
 
   <script type="module" src="./src/main.js"></script>
