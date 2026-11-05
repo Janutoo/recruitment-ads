@@ -111,7 +111,7 @@ export class Renderer {
     if (paused) {
       // Waiting for a tap after the tab returned.
       ctx.fillStyle = 'rgba(11, 30, 73, 0.55)';
-      ctx.fillRect(view.left, FIELD_TOP, width, STAGE_HEIGHT - FIELD_TOP);
+      ctx.fillRect(view.left, FIELD_TOP, width, view.bottom - FIELD_TOP);
       this.drawGesture(1, 1);
     }
     ctx.restore();
