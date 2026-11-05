@@ -1,0 +1,17 @@
+{
+  "name": "recruitment-ads",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev:a": "vite variant-a-game",
+    "dev:b": "vite variant-b-fireplace",
+    "build": "vite build variant-a-game && vite build variant-b-fireplace",
+    "assets:slices": "node scripts/slice-bg.mjs",
+    "assets:report": "node scripts/inventory.mjs",
+    "budget": "node scripts/budget.mjs"
+  },
+  "devDependencies": {
+    "sharp": "^0.35.5",
+    "vite": "^8.3.6"
+  }
+}

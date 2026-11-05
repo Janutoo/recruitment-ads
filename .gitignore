@@ -1,0 +1,6 @@
+node_modules/
+dist/
+.DS_Store
+# Original task repo: read-only reference, never part of this repository's history.
+recruitment-sf-fe-01-bam/
+.playwright-mcp/
