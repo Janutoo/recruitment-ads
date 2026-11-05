@@ -16,7 +16,7 @@ Source: the task README. `[x]` means verified by running it, in desktop Chromium
 
 **Format**
 - [x] Fills the viewport at 320x568, 360x640, 390x664, 390x844 and 430x932 without distortion or cropping (emulated phones at pixel ratio 2 and 3).
-- [x] Portrait tablets (768x1024, 768x954, 744x1133, 1024x1292) fill the screen, emulated. Landscape tablets and desktops (1024x768, 1920x1080) show a clean portrait column.
+- [x] Tablets, landscape and desktop also fill the screen: 768x1024, 768x954, 744x1133, 1024x768, 1133x744, 844x390, 1920x1080 and 2560x1080 (emulated). Rotating during a run keeps it going. Not yet confirmed on a real iPad.
 
 **Start screen**
 - [x] Logo bar, headline, player, obstacles and tutorial match `01-start.png` (average difference 1.2 of 255).

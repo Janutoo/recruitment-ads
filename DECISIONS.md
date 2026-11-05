@@ -116,7 +116,7 @@ Each entry gives the problem, the decision, the alternative and the trade-offs. 
 
 ## 8. Variant A scaling: fit 360x640, extend the background
 
-**Status: Tested** at the four sizes below, plus tablet and desktop sizes, in Chromium with emulated devices. A real phone was used for a first check of the scaling. A page zoomed out by the browser could not be emulated, so that case is untested.
+**Status: Tested** at the four sizes below, plus tablet, landscape and desktop sizes, in Chromium with emulated devices. A real phone was used for a first check of the scaling. The final version has not been confirmed on a real iPad.
 
 - **Problem:** the phones in scope are not all 9:16.
 
@@ -127,10 +127,10 @@ Each entry gives the problem, the decision, the alternative and the trade-offs. 
 | 390x664 (toolbar visible) | 1.0375 | 16.5 px wide |
 | 430x932 | 1.194 | 168 px tall |
 
-- **Decision:** `scale = min(width / 360, height / 640)` from `innerWidth` and `innerHeight`, ignoring pinch zoom. Centre the stage and extend its surroundings: white above the logo bar, the fold colour below. At the sides, gut, texture and folds continue as mirrored copies for at most 80 stage px, which fills portrait phones and tablets. Landscape tablets and desktops show the ad as a portrait column on a dark background. The canvas never has more than 2 pixels per stage px, because assets are 2x.
-- **Alternative:** `cover` scaling (cuts off the logo or CTA), a taller playfield (changes difficulty between phones, so collision fairness differs), or extending the world across wide screens (players would see obstacles far ahead).
-- **Trade-offs:** tall phones keep plain bands of about 84 px above and below (at 430x932), and landscape screens have empty sides. Portrait tablets show obstacles up to about 0.6 s earlier, which makes the game slightly easier there.
-- **Found by playing:** the first limit of 24 px left an iPad mini with a narrow column between black bars.
+- **Decision:** CSS makes the canvas fill the screen, and a `ResizeObserver` reads its real size, which also catches rotation and toolbars. `scale = min(width / 360, height / 640)`, and the stage is centred. Its surroundings extend to every edge: white above the logo bar, the fold colour below, and alternating mirrored copies of gut, texture and folds at the sides. The canvas never has more than 2 pixels per stage px, because assets are 2x.
+- **Alternative:** `cover` scaling (cuts off the logo or CTA), a taller playfield (changes difficulty between phones, so collision fairness differs), or a portrait column with empty sides on wide screens (tried first, and it looked poor on a tablet).
+- **Trade-offs:** tall phones keep plain bands of about 84 px above and below (at 430x932). Wide screens show obstacles much earlier, about 2 s in landscape on an iPad, so the game is easier there. The rules and collisions are the same everywhere.
+- **Found by playing:** on a real iPad mini, the first versions left a narrow column between dark bars.
 - **Evidence:** emulated phones at a pixel ratio of 3 use a 752x1280 canvas at 390x664 and hold 60 fps in desktop Chromium, which says little about a real phone's GPU.
 
 ## 9. Variant A audio

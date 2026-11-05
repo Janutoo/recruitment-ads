@@ -52,10 +52,11 @@ For the fireplace, run `npm run dev:b` and open `/preview.html`.
 - **Fireplace:** the 4 px gap between the parts is an assumption from `layout.png` and the width of `bg-big.jpg`.
 - **Game:** the provided gesture asset says "tab to run" instead of "tap to run".
 - **Game:** it needs a server, because it reads image alpha for collisions and uses ES modules. It won't start from `file://`.
+- **Game:** on wide screens the player sees obstacles much earlier, so the game is easier there.
 - **Mute toggle:** there is no provided asset for it, so it is a small inline SVG.
 
 ## AI note
 
 I used Claude Code to measure the assets, write the code and tests, and drive Playwright for visual checks.
 
-One example where the output was wrong: the first scaling code was only tested at phone sizes. When I opened the game on a wide screen, I noticed that the folds stopped short, the gut was missing on one side and obstacles were visible far ahead. The canvas had also grown to 6982x3928 px under browser zoom, which dropped the frame rate. We fixed it by limiting how far the world extends, showing the ad as a portrait column on wide screens, and capping the canvas resolution.
+One example where the output was wrong: the first scaling code was only tested at phone sizes. When I opened the game on a wide screen, I noticed that the folds stopped short, the gut was missing on one side and obstacles were visible far ahead. The canvas had also grown to 6982x3928 px under browser zoom, which dropped the frame rate. We fixed it by extending the world to every screen edge with mirrored copies and capping the canvas resolution. Playing on a real iPad mini then showed that a first fix, a portrait column with empty sides, wasn't good enough, so the canvas now fills the screen through CSS and reads its real size from there.
