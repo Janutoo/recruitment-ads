@@ -17,8 +17,9 @@ function filesOf(root, entry, seen = new Set()) {
   if (!/\.(html|css|js)$/.test(entry)) return seen;
   const source = readFileSync(join(root, entry), 'utf8');
   if (entry.endsWith('.js')) {
-    for (const [name] of source.matchAll(/[\w.-]+\.(?:png|jpe?g|mp3|js|css)\b/g)) {
-      const path = join(dirname(entry), name);
+    // Quoted, because bundled names can contain spaces (audio files do).
+    for (const [, name] of source.matchAll(/["'`]([^"'`]+\.(?:png|jpe?g|mp3|js|css))["'`]/g)) {
+      const path = join(dirname(entry), name.replace(/^\.\//, ''));
       if (existsSync(join(root, path))) filesOf(root, path, seen);
     }
     return seen;

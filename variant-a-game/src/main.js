@@ -2,8 +2,13 @@ import { Game } from './game.js';
 import { OBSTACLES, PLAYER, STAGE_HEIGHT, STAGE_WIDTH } from './level.js';
 import { buildMask } from './masks.js';
 import { Renderer } from './render.js';
+import { fx, hideEndcards, later, playCrash, playIntro, playRestart, showEndcard, stopAnimations } from './screens.js';
+import { Sound } from './sound.js';
 
-const RESTART_DELAY = 500; // ms. A panicked tap at the moment of the crash must not restart.
+const clickTag = window.clickTag || 'https://example.com/landing';
+
+const CRASH_TO_ENDCARD = 0.75; // Seconds to see what happened before the endcard covers it.
+const WIN_TO_ENDCARD = 0.2;
 
 const urls = {
   ...Object.fromEntries(
@@ -46,35 +51,48 @@ function buildMasks(images) {
   };
 }
 
+const sound = new Sound();
 const images = await loadImages();
 const masks = buildMasks(images);
 const game = new Game(masks);
 const canvas = document.querySelector('canvas');
+const stage = document.querySelector('.stage');
 const renderer = new Renderer(canvas, images, masks);
 const debug = new URLSearchParams(location.search).get('debug') === '1';
+
+let pausedByVisibility = false;
+let endcardOpen = false;
 
 function fitToViewport() {
   const viewport = window.visualViewport;
   // width x scale cancels zoom, so pinch zoom or a zoomed preview does not change the layout.
   const width = viewport ? viewport.width * viewport.scale : innerWidth;
   const height = viewport ? viewport.height * viewport.scale : innerHeight;
-  renderer.resize(Math.round(width), Math.round(height));
+  const { scale, offsetX, offsetY, view } = renderer.resize(Math.round(width), Math.round(height));
+  stage.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+  stage.style.setProperty('--side', `${-view.left}px`);
+  stage.style.setProperty('--below', `${view.bottom - STAGE_HEIGHT}px`);
 }
 fitToViewport();
 window.addEventListener('resize', fitToViewport);
 window.visualViewport?.addEventListener('resize', fitToViewport);
 
-let pausedByVisibility = false;
-let endedAt = 0;
+// Audio may only start from an interaction, and on touch that means the end of the tap.
+for (const type of ['pointerdown', 'pointerup', 'touchend', 'keydown']) {
+  window.addEventListener(type, () => sound.unlock(), { passive: true });
+}
 
 function onTap() {
+  if (endcardOpen) return;
   if (pausedByVisibility) {
     pausedByVisibility = false;
+    sound.setHeld(false);
     return;
   }
-  if (game.state === 'failed' || game.state === 'won') {
-    if (performance.now() - endedAt >= RESTART_DELAY) game.reset();
-    return;
+  if (game.state === 'ready') {
+    stopAnimations();
+    sound.unlock();
+    sound.startMusic();
   }
   game.tap();
 }
@@ -84,7 +102,8 @@ canvas.addEventListener('pointerdown', (event) => {
   onTap();
 });
 window.addEventListener('keydown', (event) => {
-  if ((event.code === 'Space' || event.code === 'ArrowUp') && !event.repeat) {
+  if (endcardOpen || event.repeat) return;
+  if (event.code === 'Space' || event.code === 'ArrowUp') {
     event.preventDefault();
     onTap();
   }
@@ -92,7 +111,57 @@ window.addEventListener('keydown', (event) => {
 
 // A running game waits for a tap after the tab returns, so nobody crashes before looking.
 document.addEventListener('visibilitychange', () => {
-  if (document.hidden && game.state === 'playing') pausedByVisibility = true;
+  if (document.hidden && game.state === 'playing') {
+    pausedByVisibility = true;
+    sound.setHeld(true);
+  }
+  sound.setHidden(document.hidden);
+});
+
+function onRunEnded() {
+  sound.stopAll();
+  if (game.state === 'failed') {
+    sound.play('crash');
+    playCrash();
+    later(CRASH_TO_ENDCARD, () => openEndcard('fail'));
+  } else {
+    later(WIN_TO_ENDCARD, () => openEndcard('win'));
+  }
+}
+
+function openEndcard(kind) {
+  endcardOpen = true;
+  showEndcard(kind);
+  if (kind === 'fail') {
+    sound.play('fail');
+  } else {
+    sound.play('cheer');
+    sound.play('applause');
+  }
+}
+
+function restart() {
+  stopAnimations();
+  sound.stopAll();
+  hideEndcards();
+  endcardOpen = false;
+  pausedByVisibility = false;
+  sound.setHeld(false);
+  game.reset();
+  playRestart();
+}
+
+for (const button of document.querySelectorAll('.cta')) {
+  button.addEventListener('click', () => window.open(clickTag, '_blank'));
+}
+document.querySelector('.replay').addEventListener('click', restart);
+
+const muteButton = document.querySelector('.mute');
+muteButton.addEventListener('click', () => {
+  const muted = muteButton.getAttribute('aria-pressed') !== 'true';
+  muteButton.setAttribute('aria-pressed', String(muted));
+  sound.setMuted(muted);
+  muteButton.blur(); // Space must keep jumping, not toggle the sound again.
 });
 
 let lastTime = performance.now();
@@ -107,11 +176,10 @@ function frame(now) {
   if (!pausedByVisibility) {
     const wasPlaying = game.state === 'playing';
     game.advance(elapsed);
-    if (wasPlaying && game.state !== 'playing') endedAt = now;
+    if (wasPlaying && game.state !== 'playing') onRunEnded();
   }
 
-  renderer.draw(game);
-  if (game.state === 'failed' || game.state === 'won') renderer.drawEndLabel(game.state);
+  renderer.draw(game, fx, pausedByVisibility);
   if (debug) {
     frames++;
     if (now - fpsTime >= 500) {
@@ -123,6 +191,18 @@ function frame(now) {
   }
   requestAnimationFrame(frame);
 }
+
+hideEndcards();
+playIntro();
+stage.classList.add('is-ready');
 requestAnimationFrame(frame);
 
-if (debug) window.__gutRun = { game, isPaused: () => pausedByVisibility };
+if (debug) {
+  window.__gutRun = {
+    game,
+    sound,
+    fx,
+    isPaused: () => pausedByVisibility,
+    isEndcardOpen: () => endcardOpen,
+  };
+}

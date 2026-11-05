@@ -58,9 +58,11 @@ export class Renderer {
       bottom: STAGE_HEIGHT + offsetY / scale,
     };
     this.ctx.imageSmoothingQuality = 'high';
+    return { scale, offsetX, offsetY, view: this.view };
   }
 
-  draw(game) {
+  // fx holds decorative offsets from screens.js. They never affect collision.
+  draw(game, fx, paused) {
     const { ctx, images, view } = this;
     const width = view.right - view.left;
 
@@ -84,10 +86,12 @@ export class Renderer {
     ctx.clip();
     this.drawExtended(images.bg_texture, 0, STAGE_WIDTH);
     this.drawExtended(images.gameplay, GUT_X - game.scroll, GUT_WIDTH);
+    ctx.globalAlpha = fx.obstacles;
     for (const o of OBSTACLES) {
       const x = o.x - game.scroll;
       if (x + o.width > view.left && x < view.right) ctx.drawImage(images[o.file], x, o.y, o.width, o.height);
     }
+    ctx.globalAlpha = 1;
     ctx.restore();
 
     // Starts under the fold's last row, so a fractional scale leaves no line between them.
@@ -98,11 +102,28 @@ export class Renderer {
     ctx.fillStyle = '#fff';
     ctx.fillRect(view.left, view.top, width, LOGO_BAR_HEIGHT - view.top);
     ctx.drawImage(images.logo, 0, 0, STAGE_WIDTH, STAGE_HEIGHT);
-    ctx.drawImage(images.tut, 0, 0, STAGE_WIDTH, STAGE_HEIGHT);
+    ctx.globalAlpha = fx.headline;
+    ctx.drawImage(images.tut, 0, fx.headlineY, STAGE_WIDTH, STAGE_HEIGHT);
+    ctx.globalAlpha = 1;
 
-    if (game.state === 'ready') ctx.drawImage(images.gesture, GESTURE.x, GESTURE.y, GESTURE.width, GESTURE.height);
-    ctx.drawImage(images.player, PLAYER.x, game.y, PLAYER.width, PLAYER.height);
+    ctx.drawImage(images.player, PLAYER.x + fx.playerOffsetX, game.y + fx.playerOffsetY, PLAYER.width, PLAYER.height);
+    if (game.state === 'ready') this.drawGesture(fx.gesture, fx.gestureScale);
+    if (paused) {
+      // Waiting for a tap after the tab returned.
+      ctx.fillStyle = 'rgba(11, 30, 73, 0.55)';
+      ctx.fillRect(view.left, FIELD_TOP, width, STAGE_HEIGHT - FIELD_TOP);
+      this.drawGesture(1, 1);
+    }
     ctx.restore();
+  }
+
+  drawGesture(alpha, scale) {
+    const { ctx, images } = this;
+    const width = GESTURE.width * scale;
+    const height = GESTURE.height * scale;
+    ctx.globalAlpha = alpha;
+    ctx.drawImage(images.gesture, GESTURE.x + (GESTURE.width - width) / 2, GESTURE.y + (GESTURE.height - height) / 2, width, height);
+    ctx.globalAlpha = 1;
   }
 
   // A mirrored copy continues the image past an end that is inside the ad, without a jump.
@@ -120,19 +141,6 @@ export class Renderer {
       ctx.restore();
     }
     ctx.drawImage(image, x, 0, width, STAGE_HEIGHT);
-  }
-
-  // Temporary until the endcards exist.
-  drawEndLabel(state) {
-    const { ctx } = this;
-    ctx.setTransform(...this.transform);
-    ctx.fillStyle = 'rgba(11, 30, 73, 0.75)';
-    ctx.fillRect(40, 300, 280, 70);
-    ctx.fillStyle = '#fff';
-    ctx.font = '700 20px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(state === 'won' ? 'WON: tap to restart' : 'FAILED: tap to restart', 180, 342);
-    ctx.textAlign = 'start';
   }
 
   // Shows the real collision data, at the rounded positions the game tests.
