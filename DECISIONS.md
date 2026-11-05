@@ -46,14 +46,13 @@ Each entry gives the problem, the decision, the alternative and the trade-offs. 
 
 ## 4. Variant B background motion
 
-**Status: Open.** Decide in stage 2 with a prototype.
+**Status: Tested** in desktop Chromium.
 
 - **Problem:** continuous seams need all parts to move as one surface, but scaling around a shared point pushes each side's inner edge away from the seam. With 3% zoom around the centre of the whole fireplace, the left part's inner edge moves about 16 CSS px and exposes an uncovered strip.
-- **Options:**
-  - Keep extra pixels beyond the inner edges of the slices. `bg-big.jpg` can supply them above the seam line, but the pre-cut files below it cannot.
-  - Zoom the sides around their inner top corner and keep the top banner still. The seam then drifts by at most 7.5 CSS px at 3%.
-  - Keep the background still after the intro and use light or colour changes instead.
-- **Trade-offs:** the brief lists zoom and drift only as examples, so a calm alternative is allowed, but it is less impressive. The first test will be the corner zoom because it adds no pixels.
+- **Decision:** zoom the sides around their inner top corner and keep the top banner still. The intro goes from 1.03 to 1, and the calm state breathes between 1 and 1.015, ending at 1 at the 30 second mark.
+- **Alternative:** extra pixels beyond the inner edges of the slices, which `bg-big.jpg` can supply above the seam line but the pre-cut files below it cannot. Or a still background, which is calmer but less impressive.
+- **Trade-offs:** the top banner has no zoom. While the sides move, the seam drifts vertically by at most 7.5 CSS px in the intro and 3.75 CSS px afterwards, and only at its bottom end. At rest it lines up exactly, and the end state matches the static layout with no difference.
+- **Motion direction:** the brief's example says "zooms in", but the intro ends by settling to scale 1. Ending zoomed in would leave the product and seams misplaced. The zoom-in part is the calm state.
 
 ## 5. Conflicts between the brief and the assets
 
@@ -61,9 +60,9 @@ Each entry gives the problem, the decision, the alternative and the trade-offs. 
 
 - **Baked-in product.**
   - **Problem:** the brief's example has the product sliding in, but the pack and flowers are part of the backgrounds.
-  - **Decision:** leave the pack in place and reveal it with a mask or a light effect in the intro.
+  - **Decision:** the background starts dimmed, and a masked copy of the same image lands on the pack from 12% larger and 16 px lower, easing to a stop while the background brightens. The copy is always larger than the pack it covers, so the original never shows, and a band of light crosses the pack afterwards.
   - **Alternative:** cut the pack out of the background to move it, which leaves a hole that would have to be redrawn, and the brief forbids redrawing.
-  - **Trade-offs:** no slide-in, but the brief lists it only as an example, and nothing is redrawn.
+  - **Trade-offs:** the pack arrives from nearby rather than from outside the part, but nothing is redrawn and no bytes are added.
 - **Top headline.**
   - **Problem:** `top/hl.png` reads "STARK BEI / HUSTENREIZ & / HALSSCHMERZEN.", while `layout.png` reads "NATÜRLICH STARK / BEI HUSTENREIZ & / HALSSCHMERZEN."
   - **Decision:** use the provided asset, and build its three lines one by one.
@@ -74,15 +73,25 @@ Each entry gives the problem, the decision, the alternative and the trade-offs. 
   - **Decision:** use the asset unchanged and list the typo under known issues.
   - **Alternative:** retouch the text, which the brief forbids.
   - **Trade-offs:** a visible typo stays in the ad.
+- **Text obstacles.**
+  - **Problem:** the bacteria are arguably more fun than vertical German words.
+  - **Decision:** keep the words, because the brief requires them and they carry the campaign's message.
+  - **Alternative:** bacteria only, which leaves 6 obstacles instead of 15. Listed under next steps as something worth testing.
+  - **Trade-offs:** a slightly less playful game, in exchange for meeting the brief.
+- **Endcard assets versus designs.**
+  - **Problem:** the provided headlines are about 2.3% wider than in the designs (fail: 611 vs. 597 asset px), and the CTA and replay images are drawn slightly differently.
+  - **Decision:** use the assets, positioned from the designs. All other endcard layers match to under 0.3 of 255.
+  - **Alternative:** rescale the assets to the design, which breaks "render at 50%".
+  - **Trade-offs:** the text doesn't overlay the design pixel for pixel.
 
 ## 6. Variant B synchronisation: `postMessage` with a local fallback
 
-**Status: Proposed.**
+**Status: Tested** in desktop Chromium: five fresh loads started within 0.1 ms of each other. Different origins are not tested.
 
 - **Problem:** three separate documents must start together, and in production they may be on different origins and no preview page exists.
-- **Decision:** each part posts `ready` to its parent. The preview sends `start` once all three are ready. A part with no `start` after a short timeout starts by itself.
+- **Decision:** each part posts `ready` to its parent once its images are decoded. The preview sends `start` when all three are ready. A framed part with no `start` after 1.5 s starts by itself, and a part with no parent starts straight away.
 - **Alternative:** `BroadcastChannel` (same origin only, so not usable across ad iframes) or a shared timestamp in the URL (needs synchronised clocks and a controlling page anyway).
-- **Trade-offs:** parts can start a little apart if a part misses the timeout, and the timeout delays a standalone start slightly.
+- **Trade-offs:** in production, a framed part waits 1.5 s before it starts, because it can't know that no `start` is coming. Real ad delivery has no shared start signal, so real parts would start less precisely.
 
 ## 7. Variant A rendering: Canvas 2D without an engine
 
@@ -125,12 +134,13 @@ Each entry gives the problem, the decision, the alternative and the trade-offs. 
 
 ## 9. Variant A audio
 
-**Status: Proposed.**
+**Status: Tested by inspecting the audio state** in Chromium with emulated touch. **Nobody has listened to it**, so volume balance and the loop point are unverified.
 
 - **Problem:** autoplay is blocked until the first interaction, and replays must not stack sounds.
-- **Decision:** Web Audio API, decoding once after the first tap, with one music source at a time and one gain node for mute. Audio files stay as provided, because the game is forecast at 2.119 MB of the 3 MB limit.
+- **Decision:** Web Audio API. Files download at load and decode after the first interaction, with every source tracked and one gain node for mute. The context also unlocks on `pointerup`, because on touch `pointerdown` doesn't count as an interaction. The loop skips the 72 ms and 140 ms of silence measured at the ends of the file. Audio files stay as provided, because the game weighs 2.107 MB of the 3 MB limit.
 - **Alternative:** `<audio>` elements, which are simpler but less precise for looping and overlapping sounds.
-- **Trade-offs:** slightly more code. MP3 encoder padding can leave a small gap in the loop, which has not been tested.
+- **Trade-offs:** slightly more code. The music is played at 60% as a first guess at the balance.
+- **Evidence:** across 6 runs there was 1 source during play, crash plus fail on the endcard, and 0 after each replay.
 
 ## 10. Variant A start of a run
 
@@ -148,7 +158,7 @@ Each entry gives the problem, the decision, the alternative and the trade-offs. 
 - **Problem:** the brief asks for a clean resume, but a game that restarts on its own can crash the player before they look.
 - **Decision:** when the tab hides, the run freezes. On return it waits for a tap, and that first tap only resumes, with no jump.
 - **Alternative:** resume automatically, which needs no tap but is unfair.
-- **Trade-offs:** there is no on-screen hint for this yet, so a returning player sees a frozen frame. To be added with the endcards.
+- **Trade-offs:** one extra tap. The frozen frame is dimmed and shows the provided gesture asset as a hint.
 
 ## 12. Variant A bac6 on the start screen
 
@@ -158,6 +168,16 @@ Each entry gives the problem, the decision, the alternative and the trade-offs. 
 - **Decision:** follow the target screen for this one obstacle, because it is on the first frame people see.
 - **Alternative:** 50% everywhere, which makes it overlap "Stress" on the start screen.
 - **Trade-offs:** one exception to a stated rule, covered by a test that names it.
+
+## 13. Variant A endcards: DOM over the canvas
+
+**Status: Tested** in Chromium.
+
+- **Problem:** CTA and replay must be real buttons, and a replay must leave nothing behind.
+- **Decision:** endcards are DOM layers in the same 360x640 coordinates as the canvas, animated with GSAP. Every animation is tracked, and `stopAnimations` is the one cleanup point used by replay.
+- **Alternative:** draw them on the canvas, losing native buttons and keyboard access.
+- **Trade-offs:** two layers to keep aligned, in exchange for much simpler buttons.
+- **Layer order:** the confetti sits over the happy poo, as in `03-win-endcard.png`.
 
 ## Measured positions
 

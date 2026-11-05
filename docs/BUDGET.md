@@ -2,48 +2,29 @@
 
 The limit is 3 MB per complete ad: the game on its own, and the whole three-part fireplace on its own.
 
-All values are bytes on disk with no gzip, using 1 MB = 1,000,000 B.
+All values are bytes on disk with no gzip, using 1 MB = 1,000,000 B. Run `npm run build` and `npm run budget` to reproduce them. The command fails if an ad goes over the limit.
 
-## Measured today
+## Final build
 
-`npm run budget` on the current build:
-
-| Ad | Weight | Contents |
+| Ad | Weight | Margin to 3 MB |
 |---|---|---|
-| Fireplace `top.html` | 0.542 MB | background, headline with glow, CSS, HTML |
-| Fireplace `left.html` | 0.350 MB | background, overlays, CSS, HTML |
-| Fireplace `right.html` | 0.371 MB | background, overlays, CSS, HTML |
-| **Fireplace, whole ad** | **1.262 MB** | no JS yet |
-| Game `index.html` | 0.461 MB | game core and its images: **no audio, endcards or GSAP yet** |
+| **Game** | **2.107 MB** | 0.893 MB |
+| Fireplace `top.html` | 0.616 MB | |
+| Fireplace `left.html` | 0.425 MB | |
+| Fireplace `right.html` | 0.445 MB | |
+| **Fireplace, whole ad** | **1.486 MB** | 1.514 MB |
 
-The passing `npm run budget` result does not cover the finished game yet.
+The bundled GSAP code counts three times in the fireplace, because each part is delivered as its own package.
 
-## Forecast
+## What was compressed
 
-| Item | Weight | Status |
-|---|---|---|
-| Game source assets, all | 2.016 MB | measured |
-| GSAP 3.15.1 `gsap.min.js` | 0.073 MB | measured |
-| Game code | 0.030 MB | **assumption** |
-| Fireplace code per part | 0.010 MB | **assumption** |
+- **Fireplace backgrounds:** recompressed to q85 while they were cut and blended (see DECISIONS.md). `top` 346 KB, `left` 329 KB, `right` 350 KB.
+- **Everything else:** unchanged, because the margin doesn't require compression.
 
-| Ad | Total | Margin to 3 MB |
-|---|---|---|
-| Game: all assets unchanged + GSAP + code | 2.119 MB | 0.881 MB |
-| Fireplace: current build + 3x GSAP + 3x code | 1.511 MB | 1.489 MB |
+## Reserve
 
-GSAP counts three times in the fireplace because each part is delivered as its own package.
-
-## Compression
-
-- **Fireplace backgrounds:** q85, because the margin allows it. Recompressing is required anyway to cut and blend them.
-- **Game assets:** unchanged, so audio quality stays as provided.
-- **Reserve if needed:** in a test outside the repository, cutting the applause to 6 s saved 0.565 MB. Neither its sound nor any other compression was evaluated, as it is not planned.
+In a test outside the repository, cutting the applause to 6 s saved 0.565 MB. It isn't in use, and nobody has judged how it sounds.
 
 ## Not shipped
 
 `bg-big.jpg`, the pre-cut `bg.jpg` files, `design/` and `preview.html`. The preview is a review tool, not an ad.
-
-## Not verified yet
-
-`budget.mjs` follows `src`, `href`, CSS `url()` and file names in bundled JS, which correctly finds the 23 images the game loads from code. Audio follows the same route, but there is no audio in the build to confirm it yet.
