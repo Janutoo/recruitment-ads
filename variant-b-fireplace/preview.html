@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>Fireplace preview</title>
+  <style>
+    html, body { margin: 0; background: #282828; }
+    .stage { position: relative; width: 1680px; height: 975px; }
+    iframe { position: absolute; top: 0; border: 0; display: block; }
+    #left { left: 0; width: 320px; height: 975px; }
+    #top { left: 324px; width: 1032px; height: 250px; }
+    #right { left: 1360px; width: 320px; height: 975px; }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <iframe id="left" src="./left.html" title="Fireplace left" scrolling="no"></iframe>
+    <iframe id="top" src="./top.html" title="Fireplace top" scrolling="no"></iframe>
+    <iframe id="right" src="./right.html" title="Fireplace right" scrolling="no"></iframe>
+  </div>
+</body>
+</html>

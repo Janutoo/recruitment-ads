@@ -1,0 +1,17 @@
+/* Static layout only. Sizes are CSS px; every 2x asset renders at 50%. */
+html, body { margin: 0; overflow: hidden; background: #000; }
+
+.part { position: relative; overflow: hidden; }
+.part--side { width: 320px; height: 975px; }
+.part--top { width: 1032px; height: 250px; }
+.part img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: block; }
+
+/* box.png is opaque blue on opaque black: keep the blue band, drop the black.
+   Band spans y 1489-1828 of 1950 asset px. Opacity measured against layout.png. */
+.part .panel { clip-path: inset(744.5px 0 61px 0); opacity: 0.83; }
+
+/* Side headlines are white on opaque black, so screen removes the black. */
+.part .copy { mix-blend-mode: screen; }
+
+/* cta.png has opaque black corners: the radius hides them. */
+.part .cta { left: 73.75px; top: 838px; width: 172.5px; height: 46.5px; border-radius: 6px; }
