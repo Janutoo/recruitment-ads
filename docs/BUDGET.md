@@ -14,7 +14,7 @@ All values are bytes on disk with no gzip, using 1 MB = 1,000,000 B.
 | Fireplace `left.html` | 0.350 MB | background, overlays, CSS, HTML |
 | Fireplace `right.html` | 0.371 MB | background, overlays, CSS, HTML |
 | **Fireplace, whole ad** | **1.262 MB** | no JS yet |
-| Game `index.html` | 0.402 MB | **placeholder only**: no audio, sprites or endcards |
+| Game `index.html` | 0.461 MB | game core and its images: **no audio, endcards or GSAP yet** |
 
 The passing `npm run budget` result does not cover the finished game yet.
 
@@ -46,4 +46,4 @@ GSAP counts three times in the fireplace because each part is delivered as its o
 
 ## Not verified yet
 
-`budget.mjs` follows `src`, `href` and CSS `url()`. It must also count dynamic imports and audio loaded from JS before it can be trusted on the final game.
+`budget.mjs` follows `src`, `href`, CSS `url()` and file names in bundled JS, which correctly finds the 23 images the game loads from code. Audio follows the same route, but there is no audio in the build to confirm it yet.

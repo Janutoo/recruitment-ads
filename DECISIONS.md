@@ -86,18 +86,28 @@ Each entry gives the problem, the decision, the alternative and the trade-offs. 
 
 ## 7. Variant A rendering: Canvas 2D without an engine
 
-**Status: Proposed.** No game code exists yet.
+**Status: Tested** in Chromium on desktop. Not tested on real phones.
 
 - **Problem:** the game needs one moving world, custom hitboxes, a debug overlay and a clean restart, with little weight to spare.
 - **Decision:** one `<canvas>` for gameplay. Endcards stay in the DOM, which makes the CTA and replay real buttons and suits GSAP.
 - **Alternative:** Phaser (measured at 1.376 MB, which with the 2.016 MB of assets exceeds the 3 MB limit unless assets are compressed) or DOM-only with `transform` (simple, but it adds a compositing layer per obstacle and makes the debug overlay harder).
 - **Trade-offs:** I write the loop, input and pause myself. It is a small amount of code, but those are also the likely bug sources, so they get explicit replay and pause tests.
-- **Time step:** based on `requestAnimationFrame` deltas, with a clamp so that returning from a hidden tab cannot cause a jump.
-- **Hitboxes:** images fill only 38% to 72% of their rectangles. The plan is an ellipse for the player and a small hand-tuned shape per obstacle, checked with `?debug=1`.
+- **Time step:** the rules run at a fixed 1/120 s through an accumulator, with long frames clamped. A 60 Hz and a 120 Hz phone play the same game, and the rules run without a DOM, so a bot can test the whole level in Node.
+- **Risk:** `gameplay.png` is 5056 px wide, above the 4096 px texture limit of some mobile GPUs. Browsers generally handle this, but it has not been tested on a phone. If it fails, the fix is to split the image at load.
+
+## 7a. Variant A collision: masks from the alpha channel
+
+**Status: Tested.** This replaces the original plan of an ellipse plus hand-tuned shapes.
+
+- **Problem:** the player must never die without visibly touching something, and images fill only 38% to 72% of their rectangles.
+- **Decision:** at load, build a 1 stage px mask from each image's alpha channel. Erode the player by 2 px and obstacles and folds by 1 px. The folds use the same test, so touching one counts as leaving the playfield.
+- **Alternative:** hand-tuned shapes for 15 objects, which are more work and only approximate the drawing.
+- **Trade-offs:** `getImageData` needs same-origin images, so the ad will not start from `file://` or from a CDN without CORS. It costs a little at load in exchange for no tuning.
+- **Evidence:** in a test across all 15 obstacles, every hit was a real overlap of drawn pixels, and 33.5% of rectangle overlaps did not count as hits.
 
 ## 8. Variant A scaling: fit 360x640, extend the background
 
-**Status: Proposed.** Only the 360x640 layout is verified. The numbers below are calculations.
+**Status: Tested** at the four sizes below in desktop Chromium with a pixel ratio of 1. Real toolbars and high pixel ratios are not tested.
 
 - **Problem:** the phones in scope are not all 9:16.
 
@@ -108,10 +118,9 @@ Each entry gives the problem, the decision, the alternative and the trade-offs. 
 | 390x664 (toolbar visible) | 1.0375 | 16.5 px wide |
 | 430x932 | 1.194 | 168 px tall |
 
-- **Decision:** `scale = min(width / 360, height / 640)` from `visualViewport`, re-measured on resize. Centre the stage and extend the surrounding colours into the free space: white above the logo bar, the fold colour or endcard navy below, navy at the sides. The canvas backing store follows `devicePixelRatio`.
+- **Decision:** `scale = min(width / 360, height / 640)` from `visualViewport`, re-measured on resize. Centre the stage and extend its surroundings: white above the logo bar, the fold colour below, and at the sides the gut continues and the folds are mirrored. The canvas backing store follows `devicePixelRatio`, capped at 2 because assets are 2x.
 - **Alternative:** `cover` scaling (cuts off the logo or CTA) or a taller playfield (changes difficulty between phones, so collision fairness differs).
-- **Trade-offs:** tall phones keep a colour band, in exchange for identical gameplay everywhere.
-- **Open:** how the band looks at 430x932. To be reviewed on the real render.
+- **Trade-offs:** tall phones keep plain bands of about 84 px above and below (at 430x932), in exchange for identical gameplay everywhere. The bands are clean but plain, and could be improved in the polish stage.
 
 ## 9. Variant A audio
 
@@ -121,6 +130,33 @@ Each entry gives the problem, the decision, the alternative and the trade-offs. 
 - **Decision:** Web Audio API, decoding once after the first tap, with one music source at a time and one gain node for mute. Audio files stay as provided, because the game is forecast at 2.119 MB of the 3 MB limit.
 - **Alternative:** `<audio>` elements, which are simpler but less precise for looping and overlapping sounds.
 - **Trade-offs:** slightly more code. MP3 encoder padding can leave a small gap in the loop, which has not been tested.
+
+## 10. Variant A start of a run
+
+**Status: Tested.**
+
+- **Problem:** the design places the player about 25 px under the top fold, and a jump is 44 px, so tapping at that height is an instant crash.
+- **Decision:** the run starts on the frame from `01-start.png`. After the first tap, the world moves and the player glides down to y 285 over about 0.6 s, while the first two obstacles pass beneath it. Other taps do nothing until the glide ends.
+- **Alternative:** move the player or obstacles (no longer matches the design) or use a weak first jump (still demands a split-second reaction).
+- **Trade-offs:** two of the 15 obstacles pose no threat, and early taps are ignored. This doubles as the "get ready" moment.
+
+## 11. Variant A pause: a tap resumes the run
+
+**Status: Tested with a simulated `visibilitychange`.** Headless tabs do not really hide, and sound does not exist yet.
+
+- **Problem:** the brief asks for a clean resume, but a game that restarts on its own can crash the player before they look.
+- **Decision:** when the tab hides, the run freezes. On return it waits for a tap, and that first tap only resumes, with no jump.
+- **Alternative:** resume automatically, which needs no tap but is unfair.
+- **Trade-offs:** there is no on-screen hint for this yet, so a returning player sees a frozen frame. To be added with the endcards.
+
+## 12. Variant A bac6 on the start screen
+
+**Status: Tested.**
+
+- **Problem:** the brief says to render at 50%, but `01-start.png` draws `bac6` at about 33.5% (template match: 67% of the 50% size).
+- **Decision:** follow the target screen for this one obstacle, because it is on the first frame people see.
+- **Alternative:** 50% everywhere, which makes it overlap "Stress" on the start screen.
+- **Trade-offs:** one exception to a stated rule, covered by a test that names it.
 
 ## Measured positions
 

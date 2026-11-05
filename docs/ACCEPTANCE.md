@@ -15,24 +15,24 @@ Source: the task README. `[x]` means verified by running it, see the note on eac
 ## Variant A: required
 
 **Format**
-- [ ] Fills the visible viewport from 320x568 to 430x932 without distortion or important content cut off.
-- [ ] Stays correct when mobile browser toolbars show or hide.
+- [x] Fills the viewport at 320x568, 360x640, 390x664 and 430x932 without distortion or cropping (desktop Chromium, pixel ratio 1). Real phones are still open.
+- [ ] Stays correct when mobile browser toolbars show or hide. Viewport resize during a run works in desktop Chromium, real toolbars are untested.
 
 **Start screen**
-- [x] Logo bar, headline and tutorial layers match `01-start.png` (Chromium, 360x640, static, no player or obstacles yet).
-- [ ] The first tap starts the game.
+- [x] Logo bar, headline, player, obstacles and tutorial match `01-start.png` (Chromium, 360x640, average difference 1.2 of 255).
+- [x] The first tap starts the game (real mouse and keyboard, 8 of 8 from a fresh load). Real touch is untested.
 
 **Gameplay**
-- [ ] Player x is fixed. A tap jumps, gravity pulls down.
-- [ ] Gut and obstacles scroll right to left, clipped below y 168.5.
-- [ ] 15 obstacles (`bac1-6`, `txt1-9`), each exactly once per run (asserted in debug mode).
-- [ ] Touching an obstacle or leaving the playfield at the top or bottom shows the fail endcard.
-- [ ] Reaching the end after all obstacles shows the win endcard.
-- [ ] No fail without visible contact: hitboxes are tighter than the images and were checked visually.
+- [x] Player x is fixed. A tap jumps, gravity pulls down (tests and Chromium).
+- [x] Gut and obstacles scroll right to left, clipped below y 168.5 (Chromium).
+- [x] 15 obstacles (`bac1-6`, `txt1-9`), each exactly once per run (test).
+- [ ] Touching an obstacle or leaving the playfield at the top or bottom shows the fail endcard. The run ends correctly, the endcard is still missing.
+- [ ] Reaching the end after all obstacles shows the win endcard. A bot reaches the win state in tests and in Chromium, the endcard is still missing.
+- [x] No fail without visible contact: every hit in the test is an overlap of drawn pixels, and a crash was checked visually with `?debug=1`.
 
 **Endcards**
 - [ ] Fail: sad poo, bacteria, headline, CTA, replay.
-- [ ] Replay restarts cleanly: after 5 replays, speed is unchanged and there is one loop of each timer and sound.
+- [ ] Replay restarts cleanly: after 5 replays, speed is unchanged and there is one loop of each timer and sound. The game logic restart passed 6 runs at about 120 px/s (Chromium), the button and sound are still missing.
 - [ ] Win: happy poo, confetti, headline, CTA, applause or cheer.
 - [ ] Animated entrance of endcard elements with easing.
 
@@ -41,14 +41,14 @@ Source: the task README. `[x]` means verified by running it, see the note on eac
 - [ ] Audio starts only after the first interaction.
 - [ ] Mute toggle works in every state.
 - [ ] Intro animation on the start screen.
-- [ ] Hidden tab pauses game and sound, and resumes without a jump in position.
+- [ ] Hidden tab pauses game and sound, and resumes without a jump in position. The game part passed with a simulated `visibilitychange`, sound and a real tab switch are still open.
 
 ## Variant A: nice to have
 
-- [ ] "Get ready" moment before the first obstacle.
-- [ ] Gentle difficulty ramp.
+- [x] "Get ready" moment before the first obstacle (test and Chromium).
+- [ ] Gentle difficulty ramp. Speed goes from 120 to 160 px/s, but no person has judged the feel yet.
 - [ ] `prefers-reduced-motion` for decorative animation.
-- [ ] `?debug=1` draws hitboxes.
+- [x] `?debug=1` draws hitboxes (Chromium).
 
 ## Variant B: required
 
