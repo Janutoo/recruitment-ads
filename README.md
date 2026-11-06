@@ -37,15 +37,16 @@ For the fireplace, run `npm run dev:b` and open `/preview.html`.
 
 ## What I would do next with more time
 
-- Test on real phones and in Safari, especially audio, toolbars and the very wide `gameplay.png`.
-- Listen to the audio and balance the levels, and have people play it to tune the difficulty.
+- Test on more phones and measure performance, and test the fireplace in Safari and Firefox.
+- Have other people play the game to tune the difficulty and the audio balance.
 - A/B test a version of the game with characters only. The bacteria seem more fun than the vertical words.
 - Ask for the product as a separate layer, so it could slide in from outside the fireplace.
 - Trim the 15-second applause, which is the heaviest single file in the game.
 
 ## Known issues and shortcuts
 
-- **Tested mostly in Chromium**, on desktop and with emulated phones. The game was also checked in WebKit, on an iPad mini simulator and briefly on real devices. See the end of the [acceptance checklist](docs/ACCEPTANCE.md).- **Nobody has listened to the audio.** It was checked by inspecting the audio state, so the balance and the loop point are unverified.
+- **Fireplace tested only in Chromium.** The game was also played on a real phone, including sound, and checked in WebKit, on an iPad mini simulator and on a real iPad mini. See the end of the [acceptance checklist](docs/ACCEPTANCE.md).
+- **Audio balance is a first guess.** All sounds were heard on a real phone, but the music level of 60% has not been tuned.
 - **Fireplace:** the top headline wording differs from `layout.png`, because I used the provided asset. The top banner's moss also differs, because it has to line up with the sides.
 - **Fireplace:** the product is baked into the backgrounds, so it arrives from nearby rather than from outside the part.
 - **Fireplace:** the 4 px gap between the parts is an assumption from `layout.png` and the width of `bg-big.jpg`.

@@ -19,6 +19,7 @@ Source: the task README. `[x]` means verified by running it, in desktop Chromium
 - [x] Tablets, landscape and desktop also fill the screen: 768x1024, 768x954, 744x1133, 1024x768, 1133x744, 844x390, 1920x1080 and 2560x1080 (emulated). Rotating during a run keeps it going.
 - [x] iPad mini simulator with real Safari: opening in either orientation and rotating both ways fills the screen.
 - [x] Real iPad mini: rotating without a reload works on the final build (checked by hand). An earlier build left a strip of blue background.
+- [x] Real phone: the game was played and works, including sound (checked by hand).
 
 **Start screen**
 - [x] Logo bar, headline, player, obstacles and tutorial match `01-start.png` (average difference 1.2 of 255).
@@ -39,16 +40,16 @@ Source: the task README. `[x]` means verified by running it, in desktop Chromium
 - [x] Animated entrance of endcard elements with easing.
 
 **Sound and lifecycle**
-- [x] Music loop in game, crash on hit, fail and win sounds on endcards (audio state inspected, **not listened to**).
+- [x] Music loop in game, crash on hit, fail and win sounds on endcards (audio state inspected, and heard on a real phone).
 - [x] Audio starts only after the first interaction: no audio context exists before it.
 - [x] Mute toggle works.
 - [x] Intro animation on the start screen.
-- [x] Hidden tab pauses game and sound, and resumes without a jump in position (simulated `visibilitychange`).
+- [x] Hidden tab pauses game and sound, and resumes without a jump in position (simulated `visibilitychange`, then checked by hand on a real phone).
 
 ## Variant A: nice to have
 
 - [x] "Get ready" moment before the first obstacle.
-- [x] Gentle difficulty ramp from 120 to 160 px/s. No person has judged the feel yet.
+- [x] Gentle difficulty ramp from 120 to 160 px/s. Only the author has played it so far.
 - [x] `prefers-reduced-motion` for decorative animation.
 - [x] `?debug=1` draws hitboxes.
 
@@ -87,6 +88,6 @@ Source: the task README. `[x]` means verified by running it, in desktop Chromium
 ## Still open
 
 - Real devices were checked by hand on a phone and an iPad mini only, with no measured performance.
-- Safari and Firefox, including `mix-blend-mode` and Web Audio on iOS.
-- Listening to the audio, and a person judging the difficulty.
-- A real tab switch, and parts on different origins.
+- The fireplace in Safari and Firefox, including `mix-blend-mode`, and the game in Firefox.
+- Other players judging the difficulty and the audio balance.
+- Fireplace parts on different origins.

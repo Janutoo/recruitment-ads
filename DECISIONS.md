@@ -95,14 +95,14 @@ Each entry gives the problem, the decision, the alternative and the trade-offs. 
 
 ## 7. Variant A rendering: Canvas 2D without an engine
 
-**Status: Tested** in Chromium on desktop. Not tested on real phones.
+**Status: Tested** in Chromium on desktop, and by hand on a real phone and a real iPad mini.
 
 - **Problem:** the game needs one moving world, custom hitboxes, a debug overlay and a clean restart, with little weight to spare.
 - **Decision:** one `<canvas>` for gameplay. Endcards stay in the DOM, which makes the CTA and replay real buttons and suits GSAP.
 - **Alternative:** Phaser (measured at 1.376 MB, which with the 2.016 MB of assets exceeds the 3 MB limit unless assets are compressed) or DOM-only with `transform` (simple, but it adds a compositing layer per obstacle and makes the debug overlay harder).
 - **Trade-offs:** I write the loop, input and pause myself. It is a small amount of code, but those are also the likely bug sources, so they get explicit replay and pause tests.
 - **Time step:** the rules run at a fixed 1/120 s through an accumulator, with long frames clamped. A 60 Hz and a 120 Hz phone play the same game, and the rules run without a DOM, so a bot can test the whole level in Node.
-- **Risk:** `gameplay.png` is 5056 px wide, above the 4096 px texture limit of some mobile GPUs. Browsers generally handle this, but it has not been tested on a phone. If it fails, the fix is to split the image at load.
+- **Risk:** `gameplay.png` is 5056 px wide, above the 4096 px texture limit of some mobile GPUs. It works on the real phone and iPad mini used for testing. If it fails on another device, the fix is to split the image at load.
 
 ## 7a. Variant A collision: masks from the alpha channel
 
@@ -135,7 +135,7 @@ Each entry gives the problem, the decision, the alternative and the trade-offs. 
 
 ## 9. Variant A audio
 
-**Status: Tested by inspecting the audio state** in Chromium with emulated touch. **Nobody has listened to it**, so volume balance and the loop point are unverified.
+**Status: Tested** by inspecting the audio state in Chromium with emulated touch, and by ear on a real phone, where all sounds play. The volume balance has not been tuned.
 
 - **Problem:** autoplay is blocked until the first interaction, and replays must not stack sounds.
 - **Decision:** Web Audio API. Files download at load and decode after the first interaction, with every source tracked and one gain node for mute. The context also unlocks on `pointerup`, because on touch `pointerdown` doesn't count as an interaction. The loop skips the 72 ms and 140 ms of silence measured at the ends of the file. Audio files stay as provided, because the game weighs 2.107 MB of the 3 MB limit.
@@ -154,7 +154,7 @@ Each entry gives the problem, the decision, the alternative and the trade-offs. 
 
 ## 11. Variant A pause: a tap resumes the run
 
-**Status: Tested with a simulated `visibilitychange`.** Headless tabs do not really hide, and sound does not exist yet.
+**Status: Tested** with a simulated `visibilitychange`, because headless tabs do not really hide, and by hand on a real phone.
 
 - **Problem:** the brief asks for a clean resume, but a game that restarts on its own can crash the player before they look.
 - **Decision:** when the tab hides, the run freezes. On return it waits for a tap, and that first tap only resumes, with no jump.
