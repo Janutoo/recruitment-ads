@@ -116,7 +116,7 @@ Each entry gives the problem, the decision, the alternative and the trade-offs. 
 
 ## 8. Variant A scaling: fit 360x640, extend the background
 
-**Status: Tested** at the four sizes below, plus tablet, landscape and desktop sizes, in Chromium with emulated devices. An iPad mini simulator (iOS 26.5, real Safari) fills the screen when opened in either orientation and after rotating both ways. A real phone fills the screen too. A real iPad mini showed a strip of blue background after rotating without a reload on an earlier build, and the current build works on that device. The simulator didn't reproduce the strip, so the exact cause is unconfirmed.
+**Status: Tested** at the four sizes below, plus tablet, landscape and desktop sizes, in Chromium with emulated devices. An iPad mini simulator (iOS 26.5, real Safari) fills the screen when opened in either orientation and after rotating both ways. A real phone fills the screen too. On a real iPad mini, rotating without a reload works in Safari and in Chrome on the current build (checked by hand). See the two Chrome entries below.
 
 - **Problem:** the phones in scope are not all 9:16.
 
@@ -131,6 +131,8 @@ Each entry gives the problem, the decision, the alternative and the trade-offs. 
 - **Alternative:** `cover` scaling (cuts off the logo or CTA), a taller playfield (changes difficulty between phones, so collision fairness differs), or a portrait column with empty sides on wide screens (tried first, and it looked poor on a tablet).
 - **Trade-offs:** tall phones keep plain bands of about 84 px above and below (at 430x932). Wide screens show obstacles much earlier, about 2 s in landscape on an iPad, so the game is easier there. The rules and collisions are the same everywhere.
 - **Found by playing:** on a real iPad mini, the first versions left a narrow column between dark bars.
+- **Chrome on iPad:** logs sent from the device showed that after a rotation to landscape Chrome sometimes keeps the portrait page width (744 instead of 1133 px) and paints nothing outside it, so a strip of background stays on the right. It happened on every rotation in two sessions. Sizing the canvas to the window width did not help, because Chrome still clips the page. So when the window and the orientation media query disagree for at least 0.5 s, the viewport tag gets the window width, which makes Chrome lay the page out again, and from then on it follows the window width. The delay exists because Chrome on iPhone shows the same mismatch for up to about 0.4 s while it rotates. **Status:** the logic is tested in simulation with values from the device logs. On the real iPad the bug did not come back after the change, so the workaround has not had to run there yet. The simulator only runs Safari, which is why it never showed the strip.
+- **Chrome on iPhone in landscape:** Chrome keeps the page out of the notch areas (832 of 926 px), so bars in the page background colour remain at the sides. The game fills the whole page, and a page cannot paint outside it.
 - **Evidence:** emulated phones at a pixel ratio of 3 use a 752x1280 canvas at 390x664 and hold 60 fps in desktop Chromium, which says little about a real phone's GPU.
 
 ## 9. Variant A audio

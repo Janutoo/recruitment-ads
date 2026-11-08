@@ -53,6 +53,7 @@ For the fireplace, run `npm run dev:b` and open `/preview.html`.
 - **Game:** the provided gesture asset says "tab to run" instead of "tap to run".
 - **Game:** it needs a server, because it reads image alpha for collisions and uses ES modules. It won't start from `file://`.
 - **Game:** on wide screens the player sees obstacles much earlier, so the game is easier there.
+- **Game in Chrome on iOS:** on a phone with a notch in landscape, Chrome keeps the page out of the notch areas, so plain bars remain at the sides. On iPad, Chrome sometimes keeps the portrait width after a rotation. The game works around it (see DECISIONS.md, section 8), but the workaround has only run in simulation so far.
 - **Mute toggle:** there is no provided asset for it, so it is a small inline SVG.
 
 ## AI note

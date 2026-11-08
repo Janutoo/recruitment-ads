@@ -18,7 +18,9 @@ Source: the task README. `[x]` means verified by running it, in desktop Chromium
 - [x] Fills the viewport at 320x568, 360x640, 390x664, 390x844 and 430x932 without distortion or cropping (emulated phones at pixel ratio 2 and 3).
 - [x] Tablets, landscape and desktop also fill the screen: 768x1024, 768x954, 744x1133, 1024x768, 1133x744, 844x390, 1920x1080 and 2560x1080 (emulated). Rotating during a run keeps it going.
 - [x] iPad mini simulator with real Safari: opening in either orientation and rotating both ways fills the screen.
-- [x] Real iPad mini: rotating without a reload works on the final build (checked by hand). An earlier build left a strip of blue background.
+- [x] Real iPad mini in Safari: rotating without a reload works on the final build (checked by hand).
+- [x] Real iPad mini in Chrome: rotating without a reload fills the screen (checked by hand). Chrome sometimes keeps the portrait width after a rotation. The workaround for that is tested in simulation, because the bug did not come back on the device after the change.
+- [x] Real phone in Chrome, landscape: the game fills the page. Chrome leaves the notch areas at the sides outside the page.
 - [x] Real phone: the game was played and works, including sound (checked by hand).
 
 **Start screen**
@@ -91,3 +93,4 @@ Source: the task README. `[x]` means verified by running it, in desktop Chromium
 - The fireplace in Safari and Firefox, including `mix-blend-mode`, and the game in Firefox.
 - Other players judging the difficulty and the audio balance.
 - Fireplace parts on different origins.
+- The Chrome on iPad width workaround actually running on a device.

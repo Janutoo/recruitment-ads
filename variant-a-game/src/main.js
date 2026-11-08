@@ -67,8 +67,36 @@ let endcardOpen = false;
 let fittedWidth = 0;
 let fittedHeight = 0;
 
+// Chrome on iPad can keep the portrait page width after a rotation, although the window has turned,
+// and it paints nothing outside that width. The page then still matches the portrait media query.
+// Chrome on iPhone shows the same mismatch for up to about 0.4 s while it rotates, so only a mismatch
+// that lasts gives the viewport tag the window width, which makes Chrome lay the page out again.
+// From then on the tag follows the window width.
+const isChromeOnIos = /CriOS/.test(navigator.userAgent);
+const viewportTag = document.querySelector('meta[name="viewport"]');
+const viewportContent = viewportTag.content;
+const STUCK_AFTER_MS = 500;
+let mismatchSince = 0;
+let forcedWidth = 0;
+
+function fixChromeWidth() {
+  if (!isChromeOnIos || !outerWidth || !outerHeight) return;
+  const windowIsLandscape = outerWidth > outerHeight;
+  const pageIsLandscape = !matchMedia('(orientation: portrait)').matches;
+  const now = performance.now();
+  if (windowIsLandscape === pageIsLandscape) mismatchSince = 0;
+  else if (!mismatchSince) mismatchSince = now;
+
+  const stuck = mismatchSince && now - mismatchSince >= STUCK_AFTER_MS;
+  if ((stuck || forcedWidth) && forcedWidth !== outerWidth) {
+    forcedWidth = outerWidth;
+    viewportTag.content = viewportContent.replace('width=device-width', `width=${outerWidth}`);
+  }
+}
+
 function fitToScreen() {
   if (window.visualViewport?.scale > 1.01) return; // Pinch zoom is not a layout change.
+  fixChromeWidth();
   const width = innerWidth;
   const height = innerHeight;
   if (!width || !height || (width === fittedWidth && height === fittedHeight)) return;
@@ -76,7 +104,7 @@ function fitToScreen() {
   fittedHeight = height;
   window.scrollTo(0, 0);
 
-  // Explicit sizes, because after a rotation iOS Safari can leave percentage and fixed sizes stale.
+  // Explicit sizes, because after a rotation iOS browsers can leave percentage and fixed sizes stale.
   for (const element of [canvas, screenLayer]) {
     element.style.width = `${width}px`;
     element.style.height = `${height}px`;
@@ -90,9 +118,9 @@ function fitToScreen() {
 // iOS reports the final size some time after the rotation event, so measure again shortly after.
 function onScreenChange() {
   fitToScreen();
-  for (const delay of [50, 150, 300, 600, 1000]) setTimeout(fitToScreen, delay);
+  for (const delay of [50, 150, 300, 600, 1000, 1500]) setTimeout(fitToScreen, delay);
 }
-fitToScreen();
+onScreenChange();
 window.addEventListener('resize', onScreenChange);
 window.addEventListener('orientationchange', onScreenChange);
 window.addEventListener('pageshow', onScreenChange);
