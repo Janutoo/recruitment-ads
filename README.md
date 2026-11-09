@@ -45,16 +45,13 @@ For the fireplace, run `npm run dev:b` and open `/preview.html`.
 
 ## Known issues and shortcuts
 
-- **Fireplace tested only in Chromium.** The game was also played on a real phone, including sound, and checked in WebKit, on an iPad mini simulator and on a real iPad mini. See the end of the [acceptance checklist](docs/ACCEPTANCE.md).
-- **Audio balance is a first guess.** All sounds were heard on a real phone, but the music level of 60% has not been tuned.
-- **Fireplace:** the top headline wording differs from `layout.png`, because I used the provided asset. The top banner's moss also differs, because it has to line up with the sides.
-- **Fireplace:** the product is baked into the backgrounds, so it arrives from nearby rather than from outside the part.
-- **Fireplace:** the 4 px gap between the parts is an assumption from `layout.png` and the width of `bg-big.jpg`.
-- **Game:** the provided gesture asset says "tab to run" instead of "tap to run".
-- **Game:** it needs a server, because it reads image alpha for collisions and uses ES modules. It won't start from `file://`.
-- **Game:** on wide screens the player sees obstacles much earlier, so the game is easier there.
-- **Game in Chrome on iOS:** on a phone with a notch in landscape, Chrome keeps the page out of the notch areas, so plain bars remain at the sides. On iPad, Chrome sometimes keeps the portrait width after a rotation. The game works around it (see DECISIONS.md, section 8), but the workaround has only run in simulation so far.
-- **Mute toggle:** there is no provided asset for it, so it is a small inline SVG.
+- **Browsers:** the game was tested in Chromium and WebKit, on an iPad mini simulator, and by hand on a real phone and a real iPad mini in Safari and Chrome, including sound. The fireplace, a desktop format, was tested in Chromium. Details are in the [acceptance checklist](docs/ACCEPTANCE.md).
+- **Provided assets win:** where they differ from the designs, I used the assets: the top headline wording, the CTA colour and "tab to run" on the gesture asset. See DECISIONS.md, section 5.
+- **Fireplace:** the product is baked into the backgrounds, so it arrives from nearby rather than from outside the part. The 4 px gap between the parts comes from `layout.png` and the width of `bg-big.jpg`, because the brief doesn't state it.
+- **Game:** it needs a local server, because it reads image alpha for collisions and uses ES modules. The brief allows this.
+- **Game:** on wide screens the player sees obstacles earlier, so the game is easier there.
+- **Game in Chrome on iOS:** in landscape on a phone with a notch, Chrome leaves the notch areas outside the page, so bars stay at the sides. On iPad, the game works around Chrome keeping the portrait width after a rotation (DECISIONS.md, section 8).
+- **Mute toggle:** no asset was provided for it, so it is a small inline SVG.
 
 ## AI note
 
