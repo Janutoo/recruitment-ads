@@ -46,6 +46,8 @@ Source: the task README. `[x]` means verified by running it, in desktop Chromium
 - [x] Audio starts only after the first interaction: no audio context exists before it.
 - [x] Mute toggle works.
 - [x] Intro animation on the start screen.
+- [x] Game images load first, then endcard images, then sound. At an emulated 1.6 Mbit/s the game is ready after 3.5 s instead of 9.3 s, with a spinner meanwhile.
+- [x] A failed image is retried once. If it keeps failing, a CTA that opens the click tag replaces the empty screen. Blocked sounds do not stop the game.
 - [x] Hidden tab pauses game and sound, and resumes without a jump in position (simulated `visibilitychange`, then checked by hand on a real phone).
 
 ## Variant A: nice to have

@@ -22,16 +22,44 @@ const urls = {
   logo: new URL('../assets/logo.png', import.meta.url).href,
 };
 
-async function loadImages() {
-  const entries = await Promise.all(
-    Object.entries(urls).map(async ([name, url]) => {
-      const image = new Image();
-      image.src = url;
+// Endcard images get their address from code, so they download after the game images instead of with them.
+const endcardUrls = import.meta.glob('../assets/02_endcard/*/*.png', { eager: true, query: '?url', import: 'default' });
+
+// One retry, because a single dropped request should not leave the ad blank.
+async function loadImage(url) {
+  for (const src of [url, `${url}?retry`]) {
+    const image = new Image();
+    image.src = src;
+    try {
       await image.decode();
-      return [name, image];
-    }),
-  );
+      return image;
+    } catch {}
+  }
+  throw new Error(`Image did not load: ${url}`);
+}
+
+async function loadImages() {
+  const entries = await Promise.all(Object.entries(urls).map(async ([name, url]) => [name, await loadImage(url)]));
   return Object.fromEntries(entries);
+}
+
+// Without the game images there is no game, but the ad can still lead to the landing page.
+function showFallback() {
+  document.querySelector('.loading').remove();
+  const fallback = document.querySelector('.fallback');
+  fallback.querySelector('img').src = endcardUrls['../assets/02_endcard/win/cta.png'];
+  fallback.addEventListener('click', () => window.open(clickTag, '_blank'));
+  fallback.hidden = false;
+}
+
+// Endcard images and sound are needed only later, so they wait until the game can be played.
+async function loadLater() {
+  const endcardImages = [...document.querySelectorAll('img[data-asset]')].map((image) => {
+    image.src = endcardUrls[`../assets/${image.dataset.asset}`];
+    return image.decode().catch(() => {});
+  });
+  await Promise.all(endcardImages);
+  sound.load();
 }
 
 function maskFromImage(image, width, height, erode) {
@@ -52,7 +80,13 @@ function buildMasks(images) {
 }
 
 const sound = new Sound();
-const images = await loadImages();
+let images;
+try {
+  images = await loadImages();
+} catch (error) {
+  showFallback();
+  throw error;
+}
 const masks = buildMasks(images);
 const game = new Game(masks);
 const canvas = document.querySelector('canvas');
@@ -244,7 +278,9 @@ function frame(now) {
 hideEndcards();
 playIntro();
 stage.classList.add('is-ready');
+document.querySelector('.loading').remove();
 requestAnimationFrame(frame);
+loadLater();
 
 if (debug) {
   window.__gutRun = {

@@ -140,7 +140,7 @@ Each entry gives the problem, the decision, the alternative and the trade-offs. 
 **Status: Tested** by inspecting the audio state in Chromium with emulated touch, and by ear on a real phone, where all sounds play. The volume balance has not been tuned.
 
 - **Problem:** autoplay is blocked until the first interaction, and replays must not stack sounds.
-- **Decision:** Web Audio API. Files download at load and decode after the first interaction, with every source tracked and one gain node for mute. The context also unlocks on `pointerup`, because on touch `pointerdown` doesn't count as an interaction. The loop skips the 72 ms and 140 ms of silence measured at the ends of the file. Audio files stay as provided, because the game weighs 2.108 MB of the 3 MB limit.
+- **Decision:** Web Audio API. Files download once the game can be played (see section 14) and decode after the first interaction, with every source tracked and one gain node for mute. A sound that fails to download or decode is skipped and the game goes on. The context also unlocks on `pointerup`, because on touch `pointerdown` doesn't count as an interaction. The loop skips the 72 ms and 140 ms of silence measured at the ends of the file. Audio files stay as provided, because the game weighs 2.111 MB of the 3 MB limit.
 - **Alternative:** `<audio>` elements, which are simpler but less precise for looping and overlapping sounds.
 - **Trade-offs:** slightly more code. The music is played at 60% as a first guess at the balance.
 - **Evidence:** across 6 runs there was 1 source during play, crash plus fail on the endcard, and 0 after each replay.
@@ -181,6 +181,19 @@ Each entry gives the problem, the decision, the alternative and the trade-offs. 
 - **Alternative:** draw them on the canvas, losing native buttons and keyboard access.
 - **Trade-offs:** two layers to keep aligned, in exchange for much simpler buttons.
 - **Layer order:** the confetti sits over the happy poo, as in `03-win-endcard.png`.
+
+## 14. Variant A loading order and failed downloads
+
+**Status: Tested** on the built game served from a subfolder, in Chromium with an emulated 1.6 Mbit/s connection and blocked requests.
+
+- **Problem:** all 2.1 MB downloaded at once, although the first screen needs about 0.54 MB. On a slow connection the screen stayed empty for 9.3 s, and one image that failed to load left it empty for good.
+- **Decision:**
+  - The game images download first. The endcard images get their addresses from code once the game can be played, and the sound downloads after them. A first tap starts the sound download at once if it hasn't started yet.
+  - A spinner shows while loading, without motion under `prefers-reduced-motion`.
+  - A failed image is requested once more. If it still fails, the provided CTA image is shown and opens the click tag, with its alt text if that image is missing too.
+- **Alternative:** a loading screen made from assets, which would itself have to download first, or one file with every image inside it, which needs a build step for little gain.
+- **Trade-offs:** on a slow connection the music can start a moment after the first tap, and an endcard reached very early could appear before its images. The fallback is a plain button, not an ad.
+- **Evidence:** at 1.6 Mbit/s the game is ready after 3.5 s instead of 9.3 s. One failed image is retried and the game starts. A permanently failed image shows the CTA, and a click opens the click tag. With all sounds blocked, the game plays without errors.
 
 ## Measured positions
 

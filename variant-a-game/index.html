@@ -48,10 +48,20 @@
     #endcard-fail .cta { left: 37px; top: 482.5px; width: 186px; height: 38.5px; }
     #endcard-fail .replay { left: 37px; top: 538.5px; width: 185.5px; height: 40.5px; }
     #endcard-win .cta { left: 27.5px; top: 560px; width: 214px; height: 45.5px; }
+
+    .loading { position: fixed; left: 50%; top: 50%; width: 28px; height: 28px; margin: -17px 0 0 -17px; border: 3px solid rgb(255 255 255 / 25%); border-top-color: #fff; border-radius: 50%; animation: spin 0.9s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) { .loading { animation: none; } }
+
+    /* Shown only when the game images fail to load, so the ad can still be clicked. */
+    .fallback { position: fixed; inset: 0; width: 214px; height: 45.5px; margin: auto; color: #fff; font: 600 16px sans-serif; }
+    .fallback[hidden] { display: none; }
   </style>
 </head>
 <body>
   <canvas aria-label="Gut Run: tap to jump and guide the poo through the gut"></canvas>
+  <div class="loading" role="status" aria-label="Wird geladen"></div>
+  <button class="fallback" type="button" hidden><img alt="Jetzt mehr erfahren"></button>
 
   <div class="screen">
   <div class="stage">
@@ -65,26 +75,26 @@
 
     <section class="endcard" id="endcard-fail" aria-hidden="true">
       <div class="layers">
-        <img class="bubble" src="./assets/02_endcard/fail/bubble.png" alt="">
-        <img class="bacterium bacterium-1" src="./assets/02_endcard/fail/bac1.png" alt="">
-        <img class="bacterium bacterium-2" src="./assets/02_endcard/fail/bac2.png" alt="">
-        <img class="bacterium bacterium-3" src="./assets/02_endcard/fail/bac3.png" alt="">
-        <img class="bacterium bacterium-4" src="./assets/02_endcard/fail/bac4.png" alt="">
-        <img class="bacterium bacterium-5" src="./assets/02_endcard/fail/bac5.png" alt="">
-        <img class="poo" src="./assets/02_endcard/fail/sad.png" alt="">
-        <img class="headline" src="./assets/02_endcard/fail/hl.png" alt="Poo, das tat weh! Erfahre jetzt, was deinem Darm guttut.">
-        <button class="cta" type="button"><img src="./assets/02_endcard/fail/cta.png" alt="Jetzt informieren!"></button>
-        <button class="replay" type="button"><img src="./assets/02_endcard/fail/replay.png" alt="Nochmal spielen"></button>
+        <img class="bubble" data-asset="02_endcard/fail/bubble.png" alt="">
+        <img class="bacterium bacterium-1" data-asset="02_endcard/fail/bac1.png" alt="">
+        <img class="bacterium bacterium-2" data-asset="02_endcard/fail/bac2.png" alt="">
+        <img class="bacterium bacterium-3" data-asset="02_endcard/fail/bac3.png" alt="">
+        <img class="bacterium bacterium-4" data-asset="02_endcard/fail/bac4.png" alt="">
+        <img class="bacterium bacterium-5" data-asset="02_endcard/fail/bac5.png" alt="">
+        <img class="poo" data-asset="02_endcard/fail/sad.png" alt="">
+        <img class="headline" data-asset="02_endcard/fail/hl.png" alt="Poo, das tat weh! Erfahre jetzt, was deinem Darm guttut.">
+        <button class="cta" type="button"><img data-asset="02_endcard/fail/cta.png" alt="Jetzt informieren!"></button>
+        <button class="replay" type="button"><img data-asset="02_endcard/fail/replay.png" alt="Nochmal spielen"></button>
       </div>
     </section>
 
     <section class="endcard" id="endcard-win" aria-hidden="true">
       <div class="layers">
-        <img class="bubble" src="./assets/02_endcard/win/bubble.png" alt="">
-        <img class="poo" src="./assets/02_endcard/win/happy.png" alt="">
-        <img class="confetti" src="./assets/02_endcard/win/konfetti.png" alt="">
-        <img class="headline" src="./assets/02_endcard/win/hl.png" alt="Poo, tut das gut! Wenn du weißt, was dein Darm braucht.">
-        <button class="cta" type="button"><img src="./assets/02_endcard/win/cta.png" alt="Jetzt mehr erfahren"></button>
+        <img class="bubble" data-asset="02_endcard/win/bubble.png" alt="">
+        <img class="poo" data-asset="02_endcard/win/happy.png" alt="">
+        <img class="confetti" data-asset="02_endcard/win/konfetti.png" alt="">
+        <img class="headline" data-asset="02_endcard/win/hl.png" alt="Poo, tut das gut! Wenn du weißt, was dein Darm braucht.">
+        <button class="cta" type="button"><img data-asset="02_endcard/win/cta.png" alt="Jetzt mehr erfahren"></button>
       </div>
     </section>
   </div>

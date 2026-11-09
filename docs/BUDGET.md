@@ -8,7 +8,7 @@ All values are bytes on disk with no gzip, using 1 MB = 1,000,000 B. Run `npm ru
 
 | Ad | Weight | Margin to 3 MB |
 |---|---|---|
-| **Game** | **2.108 MB** | 0.892 MB |
+| **Game** | **2.111 MB** | 0.889 MB |
 | Fireplace `top.html` | 0.616 MB | |
 | Fireplace `left.html` | 0.425 MB | |
 | Fireplace `right.html` | 0.445 MB | |

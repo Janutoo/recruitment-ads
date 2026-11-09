@@ -14,10 +14,7 @@ const urls = {
 
 export class Sound {
   constructor() {
-    // Files download at load, but nothing can be decoded or played before the first interaction.
-    this.files = Object.fromEntries(
-      Object.entries(urls).map(([name, url]) => [name, fetch(url).then((response) => response.arrayBuffer())]),
-    );
+    this.files = null;
     this.buffers = {};
     this.sources = new Set();
     this.generation = 0;
@@ -27,20 +24,41 @@ export class Sound {
     this.held = false;
   }
 
-  // Safe to call on every interaction. A failed sound must never stop the ad.
+  // Downloads the files, which can happen before the first interaction. Decoding and playing cannot.
+  // A failed sound must never stop the ad, so each file resolves to null on any error.
+  load() {
+    if (this.files) return;
+    this.files = Object.fromEntries(
+      Object.entries(urls).map(([name, url]) => [
+        name,
+        fetch(url)
+          .then((response) => {
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            return response.arrayBuffer();
+          })
+          .catch((error) => {
+            console.warn(`Sound ${name} is unavailable`, error);
+            return null;
+          }),
+      ]),
+    );
+  }
+
+  // Safe to call on every interaction.
   unlock() {
     if (!this.context) {
       const AudioContextClass = window.AudioContext || window.webkitAudioContext;
       if (!AudioContextClass) return;
+      this.load();
       this.context = new AudioContextClass();
       this.master = this.context.createGain();
       this.master.gain.value = this.muted ? 0 : 1;
       this.master.connect(this.context.destination);
       for (const [name, file] of Object.entries(this.files)) {
         this.buffers[name] = file
-          .then((data) => this.context.decodeAudioData(data))
+          .then((data) => data && this.context.decodeAudioData(data))
           .catch((error) => {
-            console.warn(`Sound ${name} is unavailable`, error);
+            console.warn(`Sound ${name} cannot be decoded`, error);
             return null;
           });
       }
