@@ -1,6 +1,6 @@
 # Decisions
 
-Each entry gives the problem, the decision, the alternative and the trade-offs. Status is either **Tested**, **Proposed** (not built yet) or **Open**.
+Each entry gives the problem, the decision, the alternative and the trade-offs. Status is **Tested**, followed by how it was checked, or **Decided**, for a choice with nothing to measure.
 
 ## 1. Project structure: one package, two Vite roots
 
@@ -33,7 +33,7 @@ Each entry gives the problem, the decision, the alternative and the trade-offs. 
 
 ## 3. Variant B layers without alpha
 
-**Status: Tested** statically in Chromium. Not tested while animating.
+**Status: Tested** in Chromium on the final frame and on four frames captured during the intro, with no black areas. The CTA appears after those frames, so it was checked at rest only. While it pulses it only scales, which keeps its corners rounded.
 
 - **Problem:** `box.png`, `cta.png` and the side `hl.png` have no alpha channel, so their black areas are opaque.
 - **Decision:**
@@ -140,7 +140,7 @@ Each entry gives the problem, the decision, the alternative and the trade-offs. 
 **Status: Tested** by inspecting the audio state in Chromium with emulated touch, and by ear on a real phone, where all sounds play. The volume balance has not been tuned.
 
 - **Problem:** autoplay is blocked until the first interaction, and replays must not stack sounds.
-- **Decision:** Web Audio API. Files download at load and decode after the first interaction, with every source tracked and one gain node for mute. The context also unlocks on `pointerup`, because on touch `pointerdown` doesn't count as an interaction. The loop skips the 72 ms and 140 ms of silence measured at the ends of the file. Audio files stay as provided, because the game weighs 2.107 MB of the 3 MB limit.
+- **Decision:** Web Audio API. Files download at load and decode after the first interaction, with every source tracked and one gain node for mute. The context also unlocks on `pointerup`, because on touch `pointerdown` doesn't count as an interaction. The loop skips the 72 ms and 140 ms of silence measured at the ends of the file. Audio files stay as provided, because the game weighs 2.108 MB of the 3 MB limit.
 - **Alternative:** `<audio>` elements, which are simpler but less precise for looping and overlapping sounds.
 - **Trade-offs:** slightly more code. The music is played at 60% as a first guess at the balance.
 - **Evidence:** across 6 runs there was 1 source during play, crash plus fail on the endcard, and 0 after each replay.
